@@ -32,30 +32,84 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/**
+ * A Steam account instance type enums.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public enum ESteamInstance {
+
+    /**
+     * An account instance type enum - All.
+     *
+     * <p>Wraps {@link USteamInstance#ALL}.
+     */
     ALL(USteamInstance.ALL),
+
+    /**
+     * An account instance type enum - Desktop.
+     *
+     * <p>Wraps {@link USteamInstance#DESKTOP}.
+     */
     DESKTOP(USteamInstance.DESKTOP),
+
+    /**
+     * An account instance type enum - Console.
+     *
+     * <p>Wraps {@link USteamInstance#CONSOLE}.
+     */
     CONSOLE(USteamInstance.CONSOLE),
+
+    /**
+     * An account instance type enum - Web.
+     *
+     * <p>Wraps {@link USteamInstance#WEB}.
+     */
     WEB(USteamInstance.WEB);
 
+    /**
+     * A minimum account instance type enum.
+     *
+     * <p>Wraps {@link #ALL}.
+     */
     @NotNull
     public static final ESteamInstance MIN = ALL;
 
+    /**
+     * A maximum account instance type enum.
+     *
+     * <p>Wraps {@link #WEB}.
+     */
     @NotNull
     public static final ESteamInstance MAX = WEB;
 
+    /**
+     * An attribute name of this identifier.
+     */
     @NotNull
     public static final String ATTRIBUTE_NAME_ID = "id";
 
+    /**
+     * An identifier.
+     */
     private final int id;
 
+    /**
+     * A {@link #toString()} cache.
+     */
     @UnknownNullability
     private volatile String stringCache;
 
+    /**
+     * A {@link #stringCache} mutex.
+     */
     @NotNull
     private final Object stringCacheMutex;
 
+    /**
+     * Initialize an {@link ESteamInstance} instance.
+     *
+     * @param id    identifier
+     */
     @Contract(pure = true)
     ESteamInstance(
             final int id
@@ -67,22 +121,41 @@ public enum ESteamInstance {
         this.stringCacheMutex = new Object();
     }
 
+    /**
+     * Get this identifier.
+     *
+     * @return  identifier
+     */
     @Contract(pure = true)
     public int getId() {
         return this.id;
     }
 
+    /**
+     * Get this {@link #toString()} cache.
+     *
+     * @return  string cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getStringCache() {
         return this.stringCache;
     }
 
+    /**
+     * Check if {@link #toString()} is cached.
+     *
+     * @return  {@code true} if cached
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isStringCached() {
         return this.stringCache != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @NotNull
     @Contract(pure = true)
@@ -110,6 +183,11 @@ public enum ESteamInstance {
         }
     }
 
+    /**
+     * Get an unmodifiable list of all Steam account instance type enums.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)
@@ -117,6 +195,17 @@ public enum ESteamInstance {
         return SingletonValueList.INSTANCE;
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIdNoCheck(int)}.
+     *
+     * @param id            identifier of the instance, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static ESteamInstance fromIdOrElse(
@@ -129,6 +218,17 @@ public enum ESteamInstance {
         return UwObject.ifNotNullNoCheck(id, ESteamInstance::fromIdNoCheck);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIdOrNull(Integer)}.
+     *
+     * @param id                    identifier of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, null -> null", pure = false)
     public static ESteamInstance fromIdOrElse(
@@ -141,6 +241,17 @@ public enum ESteamInstance {
         return UwObject.ifNull(fromIdOrNull(id), defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, Supplier)}.
+     *
+     * @param id                    identifier of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static ESteamInstance fromIdOrElse(
@@ -153,6 +264,17 @@ public enum ESteamInstance {
         return fromIdOrElse(id, (Supplier<@UnknownNullability ESteamInstance>) defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its identifier
+     * or return the {@link #MIN} instance on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, ESteamInstance)}
+     * w/ {@link #MIN} as the default value.
+     *
+     * @param id    identifier of the instance, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or {@link #MIN}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamInstance fromIdOrMin(
@@ -162,6 +284,17 @@ public enum ESteamInstance {
         return fromIdOrElse(id, MIN);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its identifier
+     * or return the {@link #MAX} instance on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, ESteamInstance)}
+     * w/ {@link #MAX} as the default value.
+     *
+     * @param id    identifier of the instance, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or {@link #MAX}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamInstance fromIdOrMax(
@@ -171,6 +304,17 @@ public enum ESteamInstance {
         return fromIdOrElse(id, MAX);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, ESteamInstance)}
+     * w/ {@code null} as the default value.
+     *
+     * @param id    identifier of the instance, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static ESteamInstance fromIdOrNull(
@@ -180,6 +324,15 @@ public enum ESteamInstance {
         return fromIdOrElse(id, (@Nullable ESteamInstance) null);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its identifier.
+     *
+     * <p>Wraps {@link Map#get(Object)}.
+     *
+     * @param id    identifier of the instance
+     *
+     * @return  associated {@link ESteamInstance} instance
+     */
     @UnknownNullability
     @Contract(pure = true)
     public static ESteamInstance fromIdNoCheck(
@@ -188,6 +341,17 @@ public enum ESteamInstance {
         return SingletonMapById.INSTANCE.get(id);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexNoCheck(int)}.
+     *
+     * @param index         index of the instance, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static ESteamInstance fromIndexOrElse(
@@ -201,6 +365,17 @@ public enum ESteamInstance {
         return UwObject.ifNull(result, defaultValue);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrNull(Integer)}.
+     *
+     * @param index                 index of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, null -> null", pure = false)
     public static ESteamInstance fromIndexOrElse(
@@ -213,6 +388,17 @@ public enum ESteamInstance {
         return UwObject.ifNull(fromIndexOrNull(index), defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, Supplier)}.
+     *
+     * @param index                 index of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static ESteamInstance fromIndexOrElse(
@@ -225,6 +411,17 @@ public enum ESteamInstance {
         return fromIndexOrElse(index, (Supplier<@UnknownNullability ESteamInstance>) defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its index
+     * or return the {@link #MIN} instance on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, ESteamInstance)}
+     * w/ {@link #MIN} as the default value.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or {@link #MIN}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamInstance fromIndexOrMin(
@@ -234,6 +431,17 @@ public enum ESteamInstance {
         return fromIndexOrElse(index, MIN);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its index
+     * or return the {@link #MAX} instance on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, ESteamInstance)}
+     * w/ {@link #MAX} as the default value.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or {@link #MAX}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamInstance fromIndexOrMax(
@@ -243,6 +451,17 @@ public enum ESteamInstance {
         return fromIndexOrElse(index, MAX);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its index
+     * or return {@code null} instance on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, ESteamInstance)}
+     * w/ {@code null} as the default value.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static ESteamInstance fromIndexOrNull(
@@ -252,6 +471,15 @@ public enum ESteamInstance {
         return fromIndexOrElse(index, (@Nullable ESteamInstance) null);
     }
 
+    /**
+     * Get an {@link ESteamInstance} instance by its index.
+     *
+     * <p>Wraps {@link UwArray#getNoCheck(Object[], int)}.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamInstance} instance
+     */
     @UnknownNullability
     @Contract(pure = true)
     public static ESteamInstance fromIndexNoCheck(

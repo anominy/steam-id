@@ -32,24 +32,62 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/**
+ * A Steam domain type enums.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public enum ESteamDomain {
+
+    /**
+     * A worldwide Steam community domain enum.
+     *
+     * <p>Wraps {@link USteamDomain#COMMUNITY}.
+     */
     COMMUNITY(USteamDomain.COMMUNITY),
+
+    /**
+     * A Steam invite domain enum.
+     *
+     * <p>Wraps {@link USteamDomain#INVITE}.
+     */
     INVITE(USteamDomain.INVITE),
+
+    /**
+     * A Steam China community domain enum.
+     *
+     * <p>Wraps {@link USteamDomain#CHINA}.
+     */
     CHINA(USteamDomain.CHINA);
 
+    /**
+     * An attribute name of this value.
+     */
     @NotNull
     public static final String ATTRIBUTE_NAME_VALUE = "value";
 
+    /**
+     * A domain string.
+     */
     @NotNull
     private final String value;
 
+    /**
+     * A {@link #toString()} cache.
+     */
     @UnknownNullability
     private volatile String stringCache;
 
+    /**
+     * A {@link #stringCache} mutex.
+     */
     @NotNull
     private final Object stringCacheMutex;
 
+    /**
+     * Initialize an {@link ESteamDomain} instance.
+     *
+     * @param value     domain string
+     */
     @Contract(pure = true)
     ESteamDomain(
             @NotNull
@@ -62,22 +100,41 @@ public enum ESteamDomain {
         this.stringCacheMutex = new Object();
     }
 
+    /**
+     * Get this domain string.
+     *
+     * @return  domain string
+     */
     @Contract(pure = true)
     public String getAsString() {
         return this.value;
     }
 
+    /**
+     * Get this {@link #toString()} cache.
+     *
+     * @return  string cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getStringCache() {
         return this.stringCache;
     }
 
+    /**
+     * Check if {@link #toString()} is cached.
+     *
+     * @return  {@code true} if cached
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isStringCached() {
         return this.stringCache != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @NotNull
     @Contract(pure = true)
@@ -105,6 +162,11 @@ public enum ESteamDomain {
         }
     }
 
+    /**
+     * Get an unmodifiable list of all Steam domain enums.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)
@@ -112,6 +174,17 @@ public enum ESteamDomain {
         return SingletonValueList.INSTANCE;
     }
 
+    /**
+     * Get an {@link ESteamDomain} instance by its domain string
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromStringNoCheck(String)}.
+     *
+     * @param value         domain string of the instance, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  associated {@link ESteamDomain} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static ESteamDomain fromStringOrElse(
@@ -124,6 +197,17 @@ public enum ESteamDomain {
         return UwObject.ifNotNullNoCheck(value, ESteamDomain::fromStringNoCheck);
     }
 
+    /**
+     * Get an {@link ESteamDomain} instance by its domain string
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromStringOrNull(String)}.
+     *
+     * @param value                 domain string of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamDomain} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, null -> null", pure = false)
     public static ESteamDomain fromStringOrElse(
@@ -136,6 +220,17 @@ public enum ESteamDomain {
         return UwObject.ifNull(fromStringOrNull(value), defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamDomain} instance by its domain string
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromStringOrElse(String, Supplier)}.
+     *
+     * @param value                 domain string of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamDomain} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static ESteamDomain fromStringOrElse(
@@ -148,6 +243,17 @@ public enum ESteamDomain {
         return fromStringOrElse(value, (Supplier<@UnknownNullability ESteamDomain>) defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamDomain} instance by its domain string
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromStringOrElse(String, ESteamDomain)}
+     * w/ {@code null} as the default value.
+     *
+     * @param value     domain string of the instance, may be null
+     *
+     * @return  associated {@link ESteamDomain} instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static ESteamDomain fromStringOrNull(
@@ -157,6 +263,15 @@ public enum ESteamDomain {
         return fromStringOrElse(value, (@Nullable ESteamDomain) null);
     }
 
+    /**
+     * Get an {@link ESteamDomain} instance by its domain string.
+     *
+     * <p>Wraps {@link Map#get(Object)}.
+     *
+     * @param value     domain string of the instance, mustn't be null
+     *
+     * @return  associated {@link ESteamDomain} instance
+     */
     @UnknownNullability
     @Contract(pure = true)
     public static ESteamDomain fromStringNoCheck(
@@ -166,6 +281,17 @@ public enum ESteamDomain {
         return SingletonMapByString.INSTANCE.get(value);
     }
 
+    /**
+     * Get an {@link ESteamDomain} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexNoCheck(int)}.
+     *
+     * @param index         index of the instance, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  associated {@link ESteamDomain} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static ESteamDomain fromIndexOrElse(
@@ -179,6 +305,17 @@ public enum ESteamDomain {
         return UwObject.ifNull(result, defaultValue);
     }
 
+    /**
+     * Get an {@link ESteamDomain} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrNull(Integer)}.
+     *
+     * @param index                 index of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamDomain} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, null -> null", pure = false)
     public static ESteamDomain fromIndexOrElse(
@@ -191,6 +328,17 @@ public enum ESteamDomain {
         return UwObject.ifNull(fromIndexOrNull(index), defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamDomain} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, Supplier)}.
+     *
+     * @param index                 index of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamDomain} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static ESteamDomain fromIndexOrElse(
@@ -203,6 +351,17 @@ public enum ESteamDomain {
         return fromIndexOrElse(index, (Supplier<@UnknownNullability ESteamDomain>) defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamDomain} instance by its index
+     * or return {@code null} instance on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, ESteamDomain)}
+     * w/ {@code null} as the default value.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamDomain} instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static ESteamDomain fromIndexOrNull(
@@ -212,6 +371,15 @@ public enum ESteamDomain {
         return fromIndexOrElse(index, (@Nullable ESteamDomain) null);
     }
 
+    /**
+     * Get an {@link ESteamDomain} instance by its index.
+     *
+     * <p>Wraps {@link UwArray#getNoCheck(Object[], int)}.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamDomain} instance
+     */
     @UnknownNullability
     @Contract(pure = true)
     public static ESteamDomain fromIndexNoCheck(

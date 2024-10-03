@@ -32,28 +32,70 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/**
+ * A Steam account authentication type enums.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public enum ESteamAuth {
+
+    /**
+     * An account authentication type enum - No.
+     *
+     * <p>Wraps {@link USteamAuth#NO}.
+     */
     NO(USteamAuth.NO),
+
+    /**
+     * An account authentication type enum - Yes.
+     *
+     * <p>Wraps {@link USteamAuth#YES}.
+     */
     YES(USteamAuth.YES);
 
+    /**
+     * A minimum account authentication type enum.
+     *
+     * <p>Wraps {@link #NO}.
+     */
     @NotNull
     public static final ESteamAuth MIN = NO;
 
+    /**
+     * A maximum account authentication type enum.
+     *
+     * <p>Wraps {@link #YES}.
+     */
     @NotNull
     public static final ESteamAuth MAX = YES;
 
+    /**
+     * An attribute name of this identifier.
+     */
     @NotNull
     public static final String ATTRIBUTE_NAME_ID = "id";
 
+    /**
+     * An account authentication type identifier.
+     */
     private final int id;
 
+    /**
+     * A {@link #toString()} cache.
+     */
     @UnknownNullability
     private volatile String stringCache;
 
+    /**
+     * A {@link #stringCache} mutex.
+     */
     @NotNull
     private final Object stringCacheMutex;
 
+    /**
+     * Initialize an {@link ESteamAuth} instance.
+     *
+     * @param id    account authentication type identifier
+     */
     @Contract(pure = true)
     ESteamAuth(
             final int id
@@ -65,22 +107,41 @@ public enum ESteamAuth {
         this.stringCacheMutex = new Object();
     }
 
+    /**
+     * Get this account authentication type identifier
+     *
+     * @return  account authentication type identifier
+     */
     @Contract(pure = true)
     public int getId() {
         return this.id;
     }
 
+    /**
+     * Get this {@link #toString()} cache.
+     *
+     * @return  string cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getStringCache() {
         return this.stringCache;
     }
 
+    /**
+     * Check if {@link #toString()} is cached.
+     *
+     * @return  {@code true} if cached
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isStringCached() {
         return this.stringCache != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @NotNull
     @Contract(pure = true)
@@ -108,6 +169,11 @@ public enum ESteamAuth {
         }
     }
 
+    /**
+     * Get an unmodifiable list of all Steam account authentication type enums.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)
@@ -115,6 +181,17 @@ public enum ESteamAuth {
         return SingletonValueList.INSTANCE;
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its account authentication type identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIdNoCheck(int)}.
+     *
+     * @param id            account authentication type identifier of the instance, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static ESteamAuth fromIdOrElse(
@@ -127,6 +204,17 @@ public enum ESteamAuth {
         return UwObject.ifNotNullNoCheck(id, ESteamAuth::fromIdNoCheck);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its account authentication type identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIdOrNull(Integer)}.
+     *
+     * @param id                    account authentication type identifier of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, null -> null", pure = false)
     public static ESteamAuth fromIdOrElse(
@@ -139,6 +227,17 @@ public enum ESteamAuth {
         return UwObject.ifNull(fromIdOrNull(id), defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its account authentication type identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, Supplier)}.
+     *
+     * @param id                    account authentication type identifier of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static ESteamAuth fromIdOrElse(
@@ -151,6 +250,17 @@ public enum ESteamAuth {
         return fromIdOrElse(id, (Supplier<@UnknownNullability ESteamAuth>) defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its account authentication type identifier
+     * or return the {@link #MIN} instance on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, ESteamAuth)}
+     * w/ {@link #MIN} as the default value.
+     *
+     * @param id    account authentication type identifier of the instance, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or {@link #MIN}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamAuth fromIdOrMin(
@@ -160,6 +270,17 @@ public enum ESteamAuth {
         return fromIdOrElse(id, MIN);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its account authentication type identifier
+     * or return the {@link #MAX} instance on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, ESteamAuth)}
+     * w/ {@link #MAX} as the default value.
+     *
+     * @param id    account authentication type identifier of the instance, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or {@link #MAX}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamAuth fromIdOrMax(
@@ -169,6 +290,17 @@ public enum ESteamAuth {
         return fromIdOrElse(id, MAX);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its account authentication type identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, ESteamAuth)}
+     * w/ {@code null} as the default value.
+     *
+     * @param id    account authentication type identifier of the instance, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static ESteamAuth fromIdOrNull(
@@ -178,6 +310,15 @@ public enum ESteamAuth {
         return fromIdOrElse(id, (@Nullable ESteamAuth) null);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its account authentication type identifier.
+     *
+     * <p>Wraps {@link Map#get(Object)}.
+     *
+     * @param id    account authentication type identifier of the instance
+     *
+     * @return  associated {@link ESteamAuth} instance
+     */
     @UnknownNullability
     @Contract(pure = true)
     public static ESteamAuth fromIdNoCheck(
@@ -186,6 +327,17 @@ public enum ESteamAuth {
         return SingletonMapById.INSTANCE.get(id);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexNoCheck(int)}.
+     *
+     * @param index         index of the instance, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static ESteamAuth fromIndexOrElse(
@@ -199,6 +351,17 @@ public enum ESteamAuth {
         return UwObject.ifNull(result, defaultValue);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrNull(Integer)}.
+     *
+     * @param index                 index of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, null -> null", pure = false)
     public static ESteamAuth fromIndexOrElse(
@@ -211,6 +374,17 @@ public enum ESteamAuth {
         return UwObject.ifNull(fromIndexOrNull(index), defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, Supplier)}.
+     *
+     * @param index                 index of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static ESteamAuth fromIndexOrElse(
@@ -223,6 +397,17 @@ public enum ESteamAuth {
         return fromIndexOrElse(index, (Supplier<@UnknownNullability ESteamAuth>) defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its index
+     * or return the {@link #MIN} instance on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, ESteamAuth)}
+     * w/ {@link #MIN} as the default value.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or {@link #MIN}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamAuth fromIndexOrMin(
@@ -232,6 +417,17 @@ public enum ESteamAuth {
         return fromIndexOrElse(index, MIN);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its index
+     * or return the {@link #MAX} instance on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, ESteamAuth)}
+     * w/ {@link #MAX} as the default value.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or {@link #MAX}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamAuth fromIndexOrMax(
@@ -241,6 +437,17 @@ public enum ESteamAuth {
         return fromIndexOrElse(index, MAX);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its index
+     * or return {@code null} instance on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, ESteamAuth)}
+     * w/ {@code null} as the default value.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static ESteamAuth fromIndexOrNull(
@@ -250,6 +457,15 @@ public enum ESteamAuth {
         return fromIndexOrElse(index, (@Nullable ESteamAuth) null);
     }
 
+    /**
+     * Get an {@link ESteamAuth} instance by its index.
+     *
+     * <p>Wraps {@link UwArray#getNoCheck(Object[], int)}.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamAuth} instance
+     */
     @UnknownNullability
     @Contract(pure = true)
     public static ESteamAuth fromIndexNoCheck(

@@ -32,29 +32,77 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Supplier;
 
+/**
+ * A Steam vanity URL type enums.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public enum ESteamVanity {
+
+    /**
+     * A vanity URL type enum - Individual.
+     *
+     * <p>Wraps {@link USteamVanity#INDIVIDUAL}.
+     */
     INDIVIDUAL(USteamVanity.INDIVIDUAL),
+
+    /**
+     * A vanity URL type enum - Group.
+     *
+     * <p>Wraps {@link USteamVanity#GROUP}.
+     */
     GROUP(USteamVanity.GROUP),
+
+    /**
+     * A vanity URL type enum - Game Group.
+     *
+     * <p>Wraps {@link USteamVanity#GAME_GROUP}.
+     */
     GAME_GROUP(USteamVanity.GAME_GROUP);
 
+    /**
+     * A minimum vanity URL type enum.
+     *
+     * <p>Wraps {@link #INDIVIDUAL}.
+     */
     @NotNull
     public static final ESteamVanity MIN = INDIVIDUAL;
 
+    /**
+     * A maximum vanity URL type enum.
+     *
+     * <p>Wraps {@link #GAME_GROUP}.
+     */
     @NotNull
     public static final ESteamVanity MAX = GAME_GROUP;
 
+    /**
+     * An attribute name of this identifier.
+     */
     @NotNull
     public static final String ATTRIBUTE_NAME_ID = "id";
 
+    /**
+     * An identifier.
+     */
     private final int id;
 
+    /**
+     * A {@link #toString()} cache.
+     */
     @UnknownNullability
     private volatile String stringCache;
 
+    /**
+     * A {@link #stringCache} mutex.
+     */
     @NotNull
     private final Object stringCacheMutex;
 
+    /**
+     * Initialize an {@link ESteamVanity} instance.
+     *
+     * @param id    identifier
+     */
     @Contract(pure = true)
     ESteamVanity(
             final int id
@@ -66,22 +114,41 @@ public enum ESteamVanity {
         this.stringCacheMutex = new Object();
     }
 
+    /**
+     * Get this identifier.
+     *
+     * @return  identifier
+     */
     @Contract(pure = true)
     public int getId() {
         return this.id;
     }
 
+    /**
+     * Get this {@link #toString()} cache.
+     *
+     * @return  string cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getStringCache() {
         return this.stringCache;
     }
 
+    /**
+     * Check if {@link #toString()} is cached.
+     *
+     * @return  {@code true} if cached
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isStringCached() {
         return this.stringCache != null;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @NotNull
     @Contract(pure = true)
@@ -109,6 +176,11 @@ public enum ESteamVanity {
         }
     }
 
+    /**
+     * Get an unmodifiable list of all Steam vanity URL type enums.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)
@@ -116,6 +188,17 @@ public enum ESteamVanity {
         return SingletonValueList.INSTANCE;
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIdNoCheck(int)}.
+     *
+     * @param id            identifier of the instance, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static ESteamVanity fromIdOrElse(
@@ -128,6 +211,17 @@ public enum ESteamVanity {
         return UwObject.ifNotNullNoCheck(id, ESteamVanity::fromIdNoCheck);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIdOrNull(Integer)}.
+     *
+     * @param id                    identifier of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, null -> null", pure = false)
     public static ESteamVanity fromIdOrElse(
@@ -140,6 +234,17 @@ public enum ESteamVanity {
         return UwObject.ifNull(fromIdOrNull(id), defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, Supplier)}.
+     *
+     * @param id                    identifier of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static ESteamVanity fromIdOrElse(
@@ -152,6 +257,17 @@ public enum ESteamVanity {
         return fromIdOrElse(id, (Supplier<@UnknownNullability ESteamVanity>) defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its identifier
+     * or return the {@link #MIN} instance on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, ESteamVanity)}
+     * w/ {@link #MIN} as the default value.
+     *
+     * @param id    identifier of the instance, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or {@link #MIN}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamVanity fromIdOrMin(
@@ -161,6 +277,17 @@ public enum ESteamVanity {
         return fromIdOrElse(id, MIN);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its identifier
+     * or return the {@link #MAX} instance on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, ESteamVanity)}
+     * w/ {@link #MAX} as the default value.
+     *
+     * @param id    identifier of the instance, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or {@link #MAX}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamVanity fromIdOrMax(
@@ -170,6 +297,17 @@ public enum ESteamVanity {
         return fromIdOrElse(id, MAX);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromIdOrElse(Integer, ESteamVanity)}
+     * w/ {@code null} as the default value.
+     *
+     * @param id    identifier of the instance, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static ESteamVanity fromIdOrNull(
@@ -179,6 +317,15 @@ public enum ESteamVanity {
         return fromIdOrElse(id, (@Nullable ESteamVanity) null);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its identifier.
+     *
+     * <p>Wraps {@link Map#get(Object)}.
+     *
+     * @param id    identifier of the instance
+     *
+     * @return  associated {@link ESteamVanity} instance
+     */
     @UnknownNullability
     @Contract(pure = true)
     public static ESteamVanity fromIdNoCheck(
@@ -187,6 +334,17 @@ public enum ESteamVanity {
         return SingletonMapById.INSTANCE.get(id);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexNoCheck(int)}.
+     *
+     * @param index         index of the instance, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static ESteamVanity fromIndexOrElse(
@@ -200,6 +358,17 @@ public enum ESteamVanity {
         return UwObject.ifNull(result, defaultValue);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrNull(Integer)}.
+     *
+     * @param index                 index of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, null -> null", pure = false)
     public static ESteamVanity fromIndexOrElse(
@@ -212,6 +381,17 @@ public enum ESteamVanity {
         return UwObject.ifNull(fromIndexOrNull(index), defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its index
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, Supplier)}.
+     *
+     * @param index                 index of the instance, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static ESteamVanity fromIndexOrElse(
@@ -224,6 +404,17 @@ public enum ESteamVanity {
         return fromIndexOrElse(index, (Supplier<@UnknownNullability ESteamVanity>) defaultValueSupplier);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its index
+     * or return the {@link #MIN} instance on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, ESteamVanity)}
+     * w/ {@link #MIN} as the default value.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or {@link #MIN}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamVanity fromIndexOrMin(
@@ -233,6 +424,17 @@ public enum ESteamVanity {
         return fromIndexOrElse(index, MIN);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its index
+     * or return the {@link #MAX} instance on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, ESteamVanity)}
+     * w/ {@link #MAX} as the default value.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or {@link #MAX}
+     */
     @NotNull
     @Contract(pure = true)
     public static ESteamVanity fromIndexOrMax(
@@ -242,6 +444,17 @@ public enum ESteamVanity {
         return fromIndexOrElse(index, MAX);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its index
+     * or return {@code null} instance on failure.
+     *
+     * <p>Wraps {@link #fromIndexOrElse(Integer, ESteamVanity)}
+     * w/ {@code null} as the default value.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static ESteamVanity fromIndexOrNull(
@@ -251,6 +464,15 @@ public enum ESteamVanity {
         return fromIndexOrElse(index, (@Nullable ESteamVanity) null);
     }
 
+    /**
+     * Get an {@link ESteamVanity} instance by its index.
+     *
+     * <p>Wraps {@link UwArray#getNoCheck(Object[], int)}.
+     *
+     * @param index     index of the instance, may be null
+     *
+     * @return  associated {@link ESteamVanity} instance
+     */
     @UnknownNullability
     @Contract(pure = true)
     public static ESteamVanity fromIndexNoCheck(
