@@ -24,16 +24,51 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A Steam account instance types utility.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamInstance {
+
+    /**
+     * An account instance type - All.
+     */
     public static final int ALL = 0;
+
+    /**
+     * An account instance type - Desktop.
+     */
     public static final int DESKTOP = 1;
+
+    /**
+     * An account instance type - Console.
+     */
     public static final int CONSOLE = 2;
+
+    /**
+     * An account instance type - Web.
+     */
     public static final int WEB = 4;
 
+    /**
+     * A minimum account instance type.
+     *
+     * <p>Wraps {@link #ALL}.
+     */
     public static final int MIN = ALL;
+
+    /**
+     * A maximum account instance type.
+     *
+     * <p>Wraps {@link #WEB}.
+     */
     public static final int MAX = WEB;
 
+    /**
+     * Get an array of all account instance types.
+     *
+     * @return  new array
+     */
     @Contract(value = "-> new", pure = true)
     public static int @NotNull [] getValues() {
         return new int[] {
@@ -44,6 +79,11 @@ public final class USteamInstance {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all account instance types.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)

@@ -24,15 +24,50 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A Steam vanity URL types utility.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamVanity {
+
+    /**
+     * A vanity URL type - Individual.
+     *
+     * <p>Used for /id/ endpoint.
+     */
     public static final int INDIVIDUAL = 1;
+
+    /**
+     * A vanity URL type - Group.
+     *
+     * <p>Used for /groups/ endpoint.
+     */
     public static final int GROUP = 2;
+
+    /**
+     * A vanity URL type - Game Group.
+     */
     public static final int GAME_GROUP = 3;
 
+    /**
+     * A minimum vanity URL type.
+     *
+     * <p>Wraps {@link #INDIVIDUAL}.
+     */
     public static final int MIN = INDIVIDUAL;
+
+    /**
+     * A maximum vanity URL type.
+     *
+     * <p>Wraps {@link #GAME_GROUP}.
+     */
     public static final int MAX = GAME_GROUP;
 
+    /**
+     * Get an array of all Steam vanity URL types.
+     *
+     * @return  new array
+     */
     @Contract(value = "-> new", pure = true)
     public static int @NotNull [] getValues() {
         return new int[] {
@@ -42,6 +77,11 @@ public final class USteamVanity {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all Steam vanity URL types.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)

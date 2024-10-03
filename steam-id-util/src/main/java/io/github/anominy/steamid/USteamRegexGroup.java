@@ -24,23 +24,47 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A Steam regex groups utility.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamRegexGroup {
+
+    /**
+     * A Steam authentication type group name.
+     */
     @NotNull
     public static final String AUTH = "auth";
 
+    /**
+     * A Steam account universe type group name.
+     */
     @NotNull
     public static final String UNIVERSE = "universe";
 
+    /**
+     * A Steam account identifier group name.
+     */
     @NotNull
     public static final String ID = "id";
 
+    /**
+     * A Steam account type group name.
+     */
     @NotNull
     public static final String ACCOUNT = "account";
 
+    /**
+     * A Steam account instance type group name.
+     */
     @NotNull
     public static final String INSTANCE = "instance";
 
+    /**
+     * Get an array of all Steam regex group names.
+     *
+     * @return  new array
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static String @NotNull [] getValues() {
@@ -53,6 +77,11 @@ public final class USteamRegexGroup {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all Steam regex group names.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)

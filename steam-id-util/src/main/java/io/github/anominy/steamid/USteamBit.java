@@ -24,18 +24,57 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A Steam ID bits utility.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamBit {
+
+    /**
+     * An account ID offset in the bit vector.
+     */
     public static final int ACCOUNT_ID_OFFSET = 0;
+
+    /**
+     * An account instance offset in the bit vector.
+     */
     public static final int ACCOUNT_INSTANCE_OFFSET = 32;
+
+    /**
+     * An account type offset in the bit vector.
+     */
     public static final int ACCOUNT_TYPE_OFFSET = 52;
+
+    /**
+     * An account universe offset in the bit vector.
+     */
     public static final int ACCOUNT_UNIVERSE_OFFSET = 56;
 
+    /**
+     * An account ID mask to normalize the account ID value.
+     */
     public static final long ACCOUNT_ID_MASK = 0xFFFFFFFFL;
+
+    /**
+     * An account instance mask to normalize the account instance value.
+     */
     public static final long ACCOUNT_INSTANCE_MASK = 0x000FFFFFL;
+
+    /**
+     * An account type mask to normalize the account type value.
+     */
     public static final long ACCOUNT_TYPE_MASK = 0x0000000FL;
+
+    /**
+     * An account universe mask to normalize the account universe value.
+     */
     public static final long ACCOUNT_UNIVERSE_MASK = 0x000000FFL;
 
+    /**
+     * Get an array of all Steam ID offsets.
+     *
+     * @return  new array
+     */
     @Contract(value = "-> new", pure = true)
     public static int @NotNull [] getOffsets() {
         return new int[] {
@@ -46,6 +85,11 @@ public final class USteamBit {
         };
     }
 
+    /**
+     * Get an array of all Steam ID masks.
+     *
+     * @return  new array
+     */
     @Contract(value = "-> new", pure = true)
     public static long @NotNull [] getMasks() {
         return new long[] {
@@ -56,6 +100,11 @@ public final class USteamBit {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all Steam ID offsets.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)
@@ -63,6 +112,11 @@ public final class USteamBit {
         return SingletonOffsetList.INSTANCE;
     }
 
+    /**
+     * Get an unmodifiable list of all Steam ID masks.
+     *
+     * @return  unmodifiable list.
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)
@@ -70,18 +124,50 @@ public final class USteamBit {
         return SingletonMaskList.INSTANCE;
     }
 
+    /**
+     * Get a Steam type-32 account identifier
+     * from a Steam type-64 account identifier.
+     *
+     * @param id64  Steam type-64 account identifier
+     *
+     * @return  Steam type-32 account identifier
+     */
     public static int getAccountXuid(long id64) {
         return get(id64, ACCOUNT_ID_OFFSET, ACCOUNT_ID_MASK);
     }
 
+    /**
+     * Get a Steam account instance type identifier
+     * from a Steam type-64 account identifier.
+     *
+     * @param id64  Steam type-64 account identifier
+     *
+     * @return  Steam account instance type identifier
+     */
     public static int getAccountInstance(long id64) {
         return get(id64, ACCOUNT_INSTANCE_OFFSET, ACCOUNT_INSTANCE_MASK);
     }
 
+    /**
+     * Get a Steam account type identifier
+     * from a Steam type-64 account identifier.
+     *
+     * @param id64  Steam type-64 account identifier
+     *
+     * @return  Steam account type identifier
+     */
     public static int getAccountType(long id64) {
         return get(id64, ACCOUNT_TYPE_OFFSET, ACCOUNT_TYPE_MASK);
     }
 
+    /**
+     * Get a Steam account universe type identifier
+     * from a Steam type-64 account identifier.
+     *
+     * @param id64  Steam type-64 account identifier
+     *
+     * @return  Steam account universe type identifier
+     */
     public static int getAccountUniverse(long id64) {
         return get(id64, ACCOUNT_UNIVERSE_OFFSET, ACCOUNT_UNIVERSE_MASK);
     }

@@ -24,19 +24,71 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A Steam account universe types utility.
+ *
+ * @see <a href="https://developer.valvesoftware.com/wiki/SteamID#Universes_Available_for_Steam_Accounts">
+ *     Steam Account Universe Types on Valve Developer Community</a>
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamUniverse {
+
+    /**
+     * An account universe type - Invalid.
+     */
     public static final int INVALID = 0;
+
+    /**
+     * An account universe type - Public.
+     */
     public static final int PUBLIC = 1;
+
+    /**
+     * An account universe type - Beta.
+     */
     public static final int BETA = 2;
+
+    /**
+     * An account universe type - Internal.
+     */
     public static final int INTERNAL = 3;
+
+    /**
+     * An account universe type - Dev.
+     */
     public static final int DEV = 4;
+
+    /**
+     * An account universe type - RC.
+     */
     public static final int RC = 5;
 
+    /**
+     * A base account universe type.
+     *
+     * <p>Wraps {@link #INVALID}.
+     */
     public static final int BASE = INVALID;
+
+    /**
+     * A minimum account universe type.
+     *
+     * <p>Wraps {@link #PUBLIC}.
+     */
     public static final int MIN = PUBLIC;
+
+    /**
+     * A maximum account universe type.
+     *
+     * <p>Wraps {@link #RC}.
+     */
     public static final int MAX = RC;
 
+    /**
+     * Get an array of all Steam account universe types.
+     *
+     * @return  new array
+     */
     @Contract(value = "-> new", pure = true)
     public static int @NotNull [] getValues() {
         return new int[] {
@@ -49,6 +101,11 @@ public final class USteamUniverse {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all Steam account universe types.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)

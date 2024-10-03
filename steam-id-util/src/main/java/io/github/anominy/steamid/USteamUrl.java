@@ -24,23 +24,47 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A Steam URLs utility.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamUrl {
+
+    /**
+     * A Steam vanity /id/ URL string.
+     */
     @NotNull
     public static final String VANITY = url(USteamDomain.COMMUNITY, USteamEndpoint.ID);
 
+    /**
+     * A Steam worldwide /profiles/ URL string.
+     */
     @NotNull
     public static final String PROFILE = url(USteamDomain.COMMUNITY, USteamEndpoint.PROFILES);
 
+    /**
+     * A Steam /user/ URL string.
+     */
     @NotNull
     public static final String USER = url(USteamDomain.COMMUNITY, USteamEndpoint.USER);
 
+    /**
+     * A Steam invite /p/ URL string.
+     */
     @NotNull
     public static final String INVITE = url(USteamDomain.INVITE, USteamEndpoint.P);
 
+    /**
+     * A Steam China /profiles/ URL string.
+     */
     @NotNull
     public static final String CHINA = url(USteamDomain.CHINA, USteamEndpoint.PROFILES);
 
+    /**
+     * Get an array of all Steam URLs.
+     *
+     * @return  new array
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static String @NotNull [] getValues() {
@@ -53,6 +77,11 @@ public final class USteamUrl {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all Steam URLs.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)

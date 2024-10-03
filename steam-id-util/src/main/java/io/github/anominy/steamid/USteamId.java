@@ -23,19 +23,62 @@ import org.jetbrains.annotations.UnknownNullability;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+/**
+ * A Steam ID utility.
+ */
+@SuppressWarnings({"unused", "DefaultAnnotationParam", "BooleanMethodIsAlwaysInverted"})
 public final class USteamId {
+
+    /**
+     * A base type-32 identifier value.
+     */
     public static final int BASE_XUID = 0x00000000;
+
+    /**
+     * A minimum type-32 identifier value.
+     */
     public static final int MIN_XUID = 0x00000001;
+
+    /**
+     * A maximum type-32 identifier value.
+     */
     public static final int MAX_XUID = 0x7FFFFFFF;
 
+    /**
+     * A base type-64 identifier value.
+     */
     public static final long BASE_ID64 = 0x0110000100000000L;
+
+    /**
+     * A minimum type-64 identifier value.
+     */
     public static final long MIN_ID64 = 0x0110000100000001L;
+
+    /**
+     * A maximum type-64 identifier value.
+     */
     public static final long MAX_ID64 = 0x011000017FFFFFFFL;
 
+    /**
+     * A minimum type-2 identifier value.
+     */
     public static final int MIN_ID2 = 0x00000000;
+
+    /**
+     * A maximum type-2 identifier value.
+     */
     public static final int MAX_ID2 = 0x3FFFFFFF;
 
+    /**
+     * Check if Steam type-32 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamXuidValidNoCheck(int)}.
+     *
+     * @param xuid  Steam type-32 identifier to check, may be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean isSteamXuidValid(
             @Nullable
@@ -48,6 +91,16 @@ public final class USteamId {
         return isSteamXuidValidNoCheck(xuid);
     }
 
+    /**
+     * Check if Steam type-32 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamXuidValidNoCheck(long)}.
+     *
+     * @param xuid  Steam type-32 identifier to check, may be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean isSteamXuidValid(
             @Nullable
@@ -60,6 +113,16 @@ public final class USteamId {
         return isSteamXuidValidNoCheck(xuid);
     }
 
+    /**
+     * Check if Steam type-32 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamXuidValidNoCheck(String)}.
+     *
+     * @param xuid  Steam type-32 identifier to check, may be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean isSteamXuidValid(
             @Nullable
@@ -77,6 +140,14 @@ public final class USteamId {
         return false;
     }
 
+    /**
+     * Check if Steam type-32 identifier is valid.
+     *
+     * @param xuid  Steam type-32 identifier to check
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public static boolean isSteamXuidValidNoCheck(
             final int xuid
@@ -85,6 +156,14 @@ public final class USteamId {
 //                && xuid <= MAX_XUID;
     }
 
+    /**
+     * Check if Steam type-32 identifier is valid.
+     *
+     * @param xuid  Steam type-32 identifier to check
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public static boolean isSteamXuidValidNoCheck(
             final long xuid
@@ -93,6 +172,18 @@ public final class USteamId {
                 && xuid <= MAX_XUID;
     }
 
+    /**
+     * Check if Steam type-32 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamXuidValidNoCheck(int)}.
+     *
+     * @param xuid  Steam type-32 identifier to check, mustn't be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     *
+     * @throws NumberFormatException if the provided identifier is {@code null}
+     */
     @Contract(value = "null -> fail", pure = false)
     public static boolean isSteamXuidValidNoCheck(
             @UnknownNullability
@@ -102,6 +193,16 @@ public final class USteamId {
         return isSteamXuidValidNoCheck(intVal);
     }
 
+    /**
+     * Check if Steam type-64 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamId64ValidNoCheck(long)}.
+     *
+     * @param id64  Steam type-64 identifier to check, may be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean isSteamId64Valid(
             @Nullable
@@ -114,6 +215,16 @@ public final class USteamId {
         return isSteamId64ValidNoCheck(id64);
     }
 
+    /**
+     * Check if Steam type-64 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamId64ValidNoCheck(String)}.
+     *
+     * @param id64  Steam type-64 identifier to check, may be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean isSteamId64Valid(
             @Nullable
@@ -131,6 +242,14 @@ public final class USteamId {
         return false;
     }
 
+    /**
+     * Check if Steam type-64 identifier is valid.
+     *
+     * @param id64  Steam type-64 identifier to check
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public static boolean isSteamId64ValidNoCheck(
             final long id64
@@ -139,6 +258,18 @@ public final class USteamId {
                 && id64 <= MAX_ID64;
     }
 
+    /**
+     * Check if Steam type-64 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamId64ValidNoCheck(long)}.
+     *
+     * @param id64  Steam type-64 identifier to check, mustn't be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     *
+     * @throws NumberFormatException if the provided identifier is {@code null}
+     */
     @Contract(value = "null -> fail", pure = false)
     public static boolean isSteamId64ValidNoCheck(
             @UnknownNullability
@@ -148,6 +279,16 @@ public final class USteamId {
         return isSteamId64ValidNoCheck(longVal);
     }
 
+    /**
+     * Check if Steam type-2 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamId2ValidNoCheck(int)}.
+     *
+     * @param id2  Steam type-2 identifier to check, may be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean isSteamId2Valid(
             @Nullable
@@ -160,6 +301,16 @@ public final class USteamId {
         return isSteamId2ValidNoCheck(id2);
     }
 
+    /**
+     * Check if Steam type-2 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamId2ValidNoCheck(long)}.
+     *
+     * @param id2  Steam type-2 identifier to check, may be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean isSteamId2Valid(
             @Nullable
@@ -172,6 +323,16 @@ public final class USteamId {
         return isSteamId2ValidNoCheck(id2);
     }
 
+    /**
+     * Check if Steam type-2 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamId2ValidNoCheck(String)}.
+     *
+     * @param id2  Steam type-2 identifier to check, may be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean isSteamId2Valid(
             @Nullable
@@ -189,6 +350,14 @@ public final class USteamId {
         return false;
     }
 
+    /**
+     * Check if Steam type-2 identifier is valid.
+     *
+     * @param id2  Steam type-2 identifier to check
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public static boolean isSteamId2ValidNoCheck(
             final int id2
@@ -197,6 +366,14 @@ public final class USteamId {
                 && id2 <= MAX_ID2;
     }
 
+    /**
+     * Check if Steam type-2 identifier is valid.
+     *
+     * @param id2  Steam type-2 identifier to check
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public static boolean isSteamId2ValidNoCheck(
             final long id2
@@ -205,6 +382,18 @@ public final class USteamId {
                 && id2 <= MAX_ID2;
     }
 
+    /**
+     * Check if Steam type-2 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamId2ValidNoCheck(int)}.
+     *
+     * @param id2  Steam type-2 identifier to check, mustn't be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     *
+     * @throws NullPointerException if the provided identifier is {@code null}
+     */
     @Contract(value = "null -> fail", pure = false)
     public static boolean isSteamId2ValidNoCheck(
             @UnknownNullability
@@ -223,6 +412,16 @@ public final class USteamId {
         return isSteamId2ValidNoCheck(intVal);
     }
 
+    /**
+     * Check if Steam type-3 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamId3ValidNoCheck(String)}.
+     *
+     * @param id3  Steam type-3 identifier to check, may be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(value = "null -> false", pure = true)
     public static boolean isSteamId3Valid(
             @Nullable
@@ -240,6 +439,18 @@ public final class USteamId {
         return false;
     }
 
+    /**
+     * Check if Steam type-3 identifier is valid.
+     *
+     * <p>Wraps {@link #isSteamXuidValidNoCheck(int)}.
+     *
+     * @param id3  Steam type-3 identifier to check, mustn't be null
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     *
+     * @throws NullPointerException if the provided identifier is {@code null}
+     */
     @Contract(value = "null -> fail", pure = false)
     public static boolean isSteamId3ValidNoCheck(
             @UnknownNullability

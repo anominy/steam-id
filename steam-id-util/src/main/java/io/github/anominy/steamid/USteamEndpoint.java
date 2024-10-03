@@ -24,20 +24,41 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A Steam endpoints utility.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamEndpoint {
+
+    /**
+     * A Steam endpoint - ID.
+     */
     @NotNull
     public static final String ID = "id";
 
+    /**
+     * A Steam endpoint - Profiles.
+     */
     @NotNull
     public static final String PROFILES = "profiles";
 
+    /**
+     * A Steam endpoint - User.
+     */
     @NotNull
     public static final String USER = "user";
 
+    /**
+     * A Steam endpoint - P.
+     */
     @NotNull
     public static final String P = "p";
 
+    /**
+     * Get an array of all Steam endpoints.
+     *
+     * @return  new array
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static String @NotNull [] getValues() {
@@ -48,6 +69,11 @@ public final class USteamEndpoint {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all Steam endpoints.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)

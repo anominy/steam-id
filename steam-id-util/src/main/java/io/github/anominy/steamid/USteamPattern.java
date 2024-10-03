@@ -25,49 +25,97 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+/**
+ * A Steam patterns utility.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamPattern {
 
+    /**
+     * Get the Steam ID2 pattern.
+     *
+     * @return  pattern
+     */
     @NotNull
     public static Pattern getId2Pattern() {
         return SingletonId2Pattern.INSTANCE;
     }
 
+    /**
+     * Get the Steam ID3 pattern.
+     *
+     * @return  pattern
+     */
     @NotNull
     public static Pattern getId3Pattern() {
         return SingletonId3Pattern.INSTANCE;
     }
 
+    /**
+     * Get the Steam ID64 pattern.
+     *
+     * @return  pattern
+     */
     @NotNull
     public static Pattern getId64Pattern() {
         return SingletonId64Pattern.INSTANCE;
     }
 
+    /**
+     * Get the Steam vanity ID pattern.
+     *
+     * @return  pattern
+     */
     @NotNull
     public static Pattern getVanityIdPattern() {
         return SingletonVanityIdPattern.INSTANCE;
     }
 
+    /**
+     * Get the Steam invite code pattern.
+     *
+     * @return  pattern
+     */
     @NotNull
     public static Pattern getInviteCodePattern() {
         return SingletonInviteCodePattern.INSTANCE;
     }
 
+    /**
+     * Get the CS:GO friend code pattern.
+     *
+     * @return  pattern
+     */
     @NotNull
     public static Pattern getCsgoCodePattern() {
         return SingletonCsgoCodePattern.INSTANCE;
     }
 
+    /**
+     * Get the profile URL pattern.
+     *
+     * @return  pattern
+     */
     @NotNull
     public static Pattern getProfileUrlPattern() {
         return SingletonProfileUrlPattern.INSTANCE;
     }
 
+    /**
+     * Get the user URL pattern.
+     *
+     * @return  pattern
+     */
     @NotNull
     public static Pattern getUserUrlPattern() {
         return SingletonUserUrlPattern.INSTANCE;
     }
 
+    /**
+     * Get an array of all Steam patterns.
+     *
+     * @return  new array
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static Pattern @NotNull [] getValues() {
@@ -83,6 +131,11 @@ public final class USteamPattern {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all Steam patterns.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)

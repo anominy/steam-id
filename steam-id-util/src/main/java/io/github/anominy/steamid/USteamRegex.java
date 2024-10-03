@@ -24,8 +24,22 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A Steam regex utility.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamRegex {
+
+    /**
+     * A Steam ID2 regex.
+     *
+     * <p>Possible matching group names:
+     * <ul>
+     *     <li>{@link USteamRegexGroup#UNIVERSE}.</li>
+     *     <li>{@link USteamRegexGroup#AUTH}.</li>
+     *     <li>{@link USteamRegexGroup#ID}.</li>
+     * </ul>
+     */
     @NotNull
     public static final String ID2 = "^STEAM_(?<"
             + USteamRegexGroup.UNIVERSE
@@ -43,6 +57,17 @@ public final class USteamRegex {
             + USteamRegexGroup.ID
             + ">\\d+)$";
 
+    /**
+     * A Steam ID3 regex.
+     *
+     * <p>Possible matching group names:
+     * <ul>
+     *     <li>{@link USteamRegexGroup#ACCOUNT}.</li>
+     *     <li>{@link USteamRegexGroup#UNIVERSE}.</li>
+     *     <li>{@link USteamRegexGroup#ID}.</li>
+     *     <li>{@link USteamRegexGroup#INSTANCE}.</li>
+     * </ul>
+     */
     @NotNull
     public static final String ID3 = "^\\[?(?<"
             + USteamRegexGroup.ACCOUNT
@@ -64,34 +89,67 @@ public final class USteamRegex {
             + USteamInstance.MAX
             + "]))?]?$";
 
+    /**
+     * A Steam ID64 regex.
+     */
     @NotNull
     public static final String ID64 = "^[0-9]{17}$";
 
+    /**
+     * A Steam vanity ID regex.
+     */
     @NotNull
     public static final String VANITY_ID = "^[a-zA-Z0-9_-]{2,32}$";
 
+    /**
+     * A Steam invite code regex.
+     */
     @NotNull
     public static final String INVITE_CODE = "^["
             + USteamInvite.CODE_BASE
             + USteamInvite.CODE_DELIMITER
             + "]+$";
 
+    /**
+     * A CS:GO friend code regex.
+     */
     @NotNull
     public static final String CSGO_CODE = "^["
             + USteamCsgo.CODE_BASE
             + USteamCsgo.CODE_DELIMITER
             + "]{10}$";
 
+    /**
+     * A Steam /profiles/ URL regex.
+     *
+     * <p>Possible matching group names:
+     * <ul>
+     *     <li>{@link USteamRegexGroup#ID}</li>
+     * </ul>
+     */
     @NotNull
     public static final String PROFILE_URL = "^(?:https?:+//)?/*(?:my\\.steamchina|(?:www\\.)?steamcommunity)\\.com/+profiles/+(?<"
             + USteamRegexGroup.ID
             + ">.+?)/*$";
 
+    /**
+     * A Steam /user/ URL regex.
+     *
+     * <p>Possible matching group names:
+     * <ul>
+     *     <li>{@link USteamRegexGroup#ID}</li>
+     * </ul>
+     */
     @NotNull
     public static final String USER_URL = "^(?:https?:+//)?/*(?:(?:my\\.steamchina|(?:www\\.)?steamcommunity)\\.com/+user|s\\.team/+p)/+(?<"
             + USteamRegexGroup.ID
             + ">[\\w-]+)/*$";
 
+    /**
+     * Get an array of all Steam regexes.
+     *
+     * @return  new array
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static String @NotNull [] getValues() {
@@ -107,6 +165,11 @@ public final class USteamRegex {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all Steam regexes.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)

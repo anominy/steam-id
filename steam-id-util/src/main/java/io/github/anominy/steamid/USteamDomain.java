@@ -24,17 +24,35 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A Steam domains utility.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamDomain {
+
+    /**
+     * A Steam domain - Community.
+     */
     @NotNull
     public static final String COMMUNITY = "steamcommunity.com";
 
+    /**
+     * A Steam domain - Invite.
+     */
     @NotNull
     public static final String INVITE = "s.team";
 
+    /**
+     * A Steam domain - China.
+     */
     @NotNull
     public static final String CHINA = "my.steamchina.com";
 
+    /**
+     * Get an array of all Steam domains.
+     *
+     * @return  new array
+     */
     @NotNull
     @Contract(value = "-> new", pure = true)
     public static String @NotNull [] getValues() {
@@ -45,6 +63,11 @@ public final class USteamDomain {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all Steam domains.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)

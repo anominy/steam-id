@@ -24,14 +24,40 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A Steam authentication types utility.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamAuth {
+    /**
+     * An authentication type - No.
+     */
     public static final int NO = 0;
+
+    /**
+     * An authentication type - Yes.
+     */
     public static final int YES = 1;
 
+    /**
+     * A minimum authentication type.
+     *
+     * <p>Wraps {@link #NO}.
+     */
     public static final int MIN = NO;
+
+    /**
+     * A maximum authentication type.
+     *
+     * <p>Wraps {@link #YES}.
+     */
     public static final int MAX = YES;
 
+    /**
+     * Get an array of all Steam authentication types.
+     *
+     * @return  new array
+     */
     @Contract(value = "-> new", pure = true)
     public static int @NotNull [] getValues() {
         return new int[] {
@@ -40,6 +66,11 @@ public final class USteamAuth {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all Steam authentication types.
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)

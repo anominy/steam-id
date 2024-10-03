@@ -24,14 +24,33 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * A Steam chat flags utility.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam"})
 public final class USteamChat {
     private static final int MAGIC = (int) (USteamBit.ACCOUNT_INSTANCE_MASK + 1);
 
+    /**
+     * A chat flag - Clan.
+     */
     public static final int CLAN_FLAG = MAGIC >> 1;
+
+    /**
+     * A chat flag - Lobby.
+     */
     public static final int LOBBY_FLAG = MAGIC >> 2;
+
+    /**
+     * A chat flag - MM Lobby.
+     */
     public static final int MM_LOBBY_FLAG = MAGIC >> 3;
 
+    /**
+     * Get an array of all chat flags.
+     *
+     * @return  new array
+     */
     @Contract(value = "-> new", pure = true)
     public static int @NotNull [] getFlags() {
         return new int[] {
@@ -41,6 +60,11 @@ public final class USteamChat {
         };
     }
 
+    /**
+     * Get an unmodifiable list of all chat flags
+     *
+     * @return  unmodifiable list
+     */
     @NotNull
     @Unmodifiable
     @Contract(pure = true)
