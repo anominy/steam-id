@@ -6,7 +6,7 @@
 
     <groupId>io.github.anominy</groupId>
     <artifactId>steam-id</artifactId>
-    <version>0.3-r0</version>
+    <version>0.3-r1</version>
 
     <packaging>pom</packaging>
 
@@ -61,9 +61,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
-        <steam-id-enum.version>0.3-r0</steam-id-enum.version>
-        <steam-id-util.version>0.3-r0</steam-id-util.version>
-        <steam-id-type.version>0.3-r0</steam-id-type.version>
+        <steam-id-enum.version>0.3-r1</steam-id-enum.version>
+        <steam-id-util.version>0.3-r1</steam-id-util.version>
+        <steam-id-type.version>0.3-r1</steam-id-type.version>
         <uwutils-object.version>0.3-r1</uwutils-object.version>
         <uwutils-interface.version>0.3-r1</uwutils-interface.version>
         <uwutils-string.version>0.3-r1</uwutils-string.version>

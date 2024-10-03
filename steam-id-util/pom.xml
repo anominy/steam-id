@@ -6,11 +6,11 @@
     <parent>
         <groupId>io.github.anominy</groupId>
         <artifactId>steam-id</artifactId>
-        <version>0.3-r0</version>
+        <version>0.3-r1</version>
     </parent>
 
     <artifactId>steam-id-util</artifactId>
-    <version>0.3-r0</version>
+    <version>0.3-r1</version>
 
     <description>Util module of anominy/steam-id library</description>
 
