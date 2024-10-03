@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.anominy</groupId>
+        <artifactId>steam-id</artifactId>
+        <version>0.3-r0</version>
+    </parent>
+
+    <artifactId>steam-id-util</artifactId>
+    <version>0.3-r0</version>
+
+    <description>Util module of anominy/steam-id library</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.github.anominy</groupId>
+            <artifactId>uwutils-object</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.anominy</groupId>
+            <artifactId>uwutils-interface</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.github.anominy</groupId>
+            <artifactId>uwutils-string</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+        </dependency>
+    </dependencies>
+</project>

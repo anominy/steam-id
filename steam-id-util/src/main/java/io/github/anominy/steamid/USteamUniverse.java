@@ -1,0 +1,85 @@
+/*
+ * Copyright 2024 anominy
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package io.github.anominy.steamid;
+
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+@SuppressWarnings({"unused", "DefaultAnnotationParam"})
+public final class USteamUniverse {
+    public static final int INVALID = 0;
+    public static final int PUBLIC = 1;
+    public static final int BETA = 2;
+    public static final int INTERNAL = 3;
+    public static final int DEV = 4;
+    public static final int RC = 5;
+
+    public static final int BASE = INVALID;
+    public static final int MIN = PUBLIC;
+    public static final int MAX = RC;
+
+    @Contract(value = "-> new", pure = true)
+    public static int @NotNull [] getValues() {
+        return new int[] {
+                INVALID,
+                PUBLIC,
+                BETA,
+                INTERNAL,
+                DEV,
+                RC
+        };
+    }
+
+    @NotNull
+    @Unmodifiable
+    @Contract(pure = true)
+    public static List<@NotNull Integer> getValueList() {
+        return SingletonValueList.INSTANCE;
+    }
+
+    private static final class SingletonValueList {
+        @NotNull
+        @Unmodifiable
+        public static final List<@NotNull Integer> INSTANCE;
+
+        static {
+            final int[] values = USteamUniverse.getValues();
+            final List<Integer> list = new ArrayList<>(values.length);
+
+            for (final int value : values) {
+                list.add(value);
+            }
+
+            INSTANCE = Collections.unmodifiableList(list);
+        }
+
+        @Contract(value = "-> fail", pure = false)
+        private SingletonValueList() {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @Contract(value = "-> fail", pure = false)
+    private USteamUniverse() {
+        throw new UnsupportedOperationException();
+    }
+}
