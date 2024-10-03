@@ -31,116 +31,231 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A Steam ID representation.
+ */
 @SuppressWarnings({"unused", "DefaultAnnotationParam", "SynchronizeOnNonFinalField", "MethodDoesntCallSuperMethod", "BooleanMethodIsAlwaysInverted"})
 public final class SteamId implements Serializable, Cloneable {
-    @NotNull
-    private static final String ATTRIBUTE_NAME_XUID = "xuid";
 
+    /**
+     * An attribute name of this account type-32 identifier.
+     */
     @NotNull
-    private static final String ATTRIBUTE_NAME_UNIVERSE = "universe";
+    public static final String ATTRIBUTE_NAME_XUID = "xuid";
 
+    /**
+     * An attribute name of this account universe type.
+     */
     @NotNull
-    private static final String ATTRIBUTE_NAME_INSTANCE = "instance";
+    public static final String ATTRIBUTE_NAME_UNIVERSE = "universe";
 
+    /**
+     * An attribute name of this account instance type.
+     */
     @NotNull
-    private static final String ATTRIBUTE_NAME_ACCOUNT = "account";
+    public static final String ATTRIBUTE_NAME_INSTANCE = "instance";
 
+    /**
+     * An attribute name of this account type.
+     */
+    @NotNull
+    public static final String ATTRIBUTE_NAME_ACCOUNT = "account";
+
+    /**
+     * An account type-32 identifier.
+     */
     @UnknownNullability
     private final Integer xuid;
 
+    /**
+     * An account universe type enum.
+     */
     @UnknownNullability
     private final ESteamUniverse universe;
 
+    /**
+     * An account instance type enum.
+     */
     @UnknownNullability
     private final ESteamInstance instance;
 
+    /**
+     * An account type enum.
+     */
     @UnknownNullability
     private final ESteamAccount account;
 
+    /**
+     * A cache of the validity check.
+     */
     @UnknownNullability
     private transient volatile Boolean isValidCache;
 
+    /**
+     * A cache of the conversion to a static account key.
+     */
     @UnknownNullability
     private transient volatile Long staticKeyCache;
 
+    /**
+     * A cache of the conversion to an account type-64 identifier.
+     */
     @UnknownNullability
     private transient volatile Long id64Cache;
 
+    /**
+     * A cache of the conversion to an account type-2 identifier.
+     */
     @UnknownNullability
     private transient volatile String id2Cache;
 
+    /**
+     * A cache of the conversion to an account type-3 identifier.
+     */
     @UnknownNullability
     private transient volatile String id3Cache;
 
+    /**
+     * A cache of the conversion to a Steam invite code.
+     */
     @UnknownNullability
     private transient volatile String inviteCodeCache;
 
+    /**
+     * A cache of the conversion to a CS:GO friend code.
+     */
     @UnknownNullability
     private transient volatile String csgoCodeCache;
 
+    /**
+     * A cache of the conversion to a /profiles/%id-64% URL.
+     */
     @UnknownNullability
     private transient volatile String id64UrlCache;
 
+    /**
+     * A cache of the conversion to a /profiles/%id-3% URL.
+     */
     @UnknownNullability
     private transient volatile String id3UrlCache;
 
+    /**
+     * A cache of the conversion to a /user/%invite-code% URL.
+     */
     @UnknownNullability
     private transient volatile String userUrlCache;
 
+    /**
+     * A cache of the conversion to a /p/%invite-code% URL.
+     */
     @UnknownNullability
     private transient volatile String inviteUrlCache;
 
+    /**
+     * A cache of the conversion to a China /profiles/%id-64% URL.
+     */
     @UnknownNullability
     private transient volatile String chinaUrlCache;
 
+    /**
+     * A cache of the conversion to a hash code.
+     */
     @UnknownNullability
     private transient volatile Integer hashCodeCache;
 
+    /**
+     * A cache of the conversion to a string.
+     */
     @UnknownNullability
     private transient volatile String stringCache;
 
+    /**
+     * A {@link #isValidCache} mutex.
+     */
     @UnknownNullability
     private transient Object isValidCacheMutex;
 
+    /**
+     * A {@link #staticKeyCache} mutex.
+     */
     @UnknownNullability
     private transient Object staticKeyCacheMutex;
 
+    /**
+     * An {@link #id64Cache} mutex.
+     */
     @UnknownNullability
     private transient Object id64CacheMutex;
 
+    /**
+     * An {@link #id2Cache} mutex.
+     */
     @UnknownNullability
     private transient Object id2CacheMutex;
 
+    /**
+     * An {@link #id3Cache} mutex.
+     */
     @UnknownNullability
     private transient Object id3CacheMutex;
 
+    /**
+     * An {@link #inviteCodeCache} mutex.
+     */
     @UnknownNullability
     private transient Object inviteCodeCacheMutex;
 
+    /**
+     * A {@link #csgoCodeCache} mutex.
+     */
     @UnknownNullability
     private transient Object csgoCodeCacheMutex;
 
+    /**
+     * An {@link #id64UrlCache} mutex.
+     */
     @UnknownNullability
     private transient Object id64UrlCacheMutex;
 
+    /**
+     * An {@link #id3UrlCache} mutex.
+     */
     @UnknownNullability
     private transient Object id3UrlCacheMutex;
 
+    /**
+     *  A {@link #userUrlCache} mutex.
+     */
     @UnknownNullability
     private transient Object userUrlCacheMutex;
 
+    /**
+     * An {@link #inviteUrlCache} mutex.
+     */
     @UnknownNullability
     private transient Object inviteUrlCacheMutex;
 
+    /**
+     * A {@link #chinaUrlCache} mutex.
+     */
     @UnknownNullability
     private transient Object chinaUrlCacheMutex;
 
+    /**
+     * A {@link #hashCodeCache} mutex.
+     */
     @UnknownNullability
     private transient Object hashCodeCacheMutex;
 
+    /**
+     * A {@link #stringCache} mutex.
+     */
     @UnknownNullability
     private transient Object stringCacheMutex;
 
+    /**
+     * Initialize this mutex objects.
+     */
     @Contract(pure = true)
     private void initMutexObjects() {
         this.isValidCacheMutex = new Object();
@@ -159,12 +274,26 @@ public final class SteamId implements Serializable, Cloneable {
         this.stringCacheMutex = new Object();
     }
 
+    /**
+     * Override the {@code #readResolve} method to set up
+     * the object cache mutexes after deserialization.
+     *
+     * @return	this instance
+     */
     @Contract(value = "-> this", pure = true)
     private Object readResolve() {
         this.initMutexObjects();
         return this;
     }
 
+    /**
+     * Initialize a {@link SteamId} instance.
+     *
+     * @param xuid      account type-32 identifier, may be null
+     * @param universe  account universe type enum, may be null
+     * @param instance  account instance type enum, may be null
+     * @param account   account type enum, may be null
+     */
     @Contract(pure = true)
     private SteamId(
             @Nullable
@@ -187,6 +316,14 @@ public final class SteamId implements Serializable, Cloneable {
         this.initMutexObjects();
     }
 
+    /**
+     * Initialize a {@link SteamId} instance.
+     *
+     * @param xuid      account type-32 identifier, may be null
+     * @param universe  account universe type identifier, may be null
+     * @param instance  account instance type identifier, may be null
+     * @param account   account type identifier, may be null
+     */
     @Contract(pure = true)
     private SteamId(
             @Nullable
@@ -209,6 +346,14 @@ public final class SteamId implements Serializable, Cloneable {
         );
     }
 
+    /**
+     * Initialize a {@link SteamId} instance.
+     *
+     * @param xuid      account type-32 identifier, may be null
+     * @param universe  account universe type identifier, may be null
+     * @param instance  account instance type identifier, may be null
+     * @param account   account type character, may be null
+     */
     @Contract(pure = true)
     private SteamId(
             @Nullable
@@ -231,6 +376,14 @@ public final class SteamId implements Serializable, Cloneable {
         );
     }
 
+    /**
+     * Initialize a {@link SteamId} instance.
+     *
+     * <p>Wraps {@link #SteamId(Integer, ESteamUniverse, ESteamInstance, ESteamAccount)}
+     * w/ {@link ESteamUniverse#PUBLIC}, {@link ESteamInstance#DESKTOP}, and {@link ESteamAccount#INDIVIDUAL}.
+     *
+     * @param xuid  account type-32 identifier, may be null
+     */
     @Contract(pure = true)
     private SteamId(
             @Nullable
@@ -244,6 +397,13 @@ public final class SteamId implements Serializable, Cloneable {
         );
     }
 
+    /**
+     * Initialize a {@link SteamId} instance.
+     *
+     * <p>Defines a copy constructor.
+     *
+     * @param that	instance to copy field values from
+     */
     @Contract(value = "null -> fail", pure = true)
     private SteamId(
             @UnknownNullability
@@ -273,91 +433,206 @@ public final class SteamId implements Serializable, Cloneable {
         this.stringCache = that.stringCache;
     }
 
+    /**
+     * Check if this account type-32 identifier isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean hasXuid() {
         return this.xuid != null;
     }
 
+    /**
+     * Check if this account universe type isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean hasUniverseType() {
         return this.universe != null;
     }
 
+    /**
+     * Check if this account instance type isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean hasInstanceType() {
         return this.instance != null;
     }
 
+    /**
+     * Check if this account type isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean hasAccountType() {
         return this.account != null;
     }
 
+    /**
+     * Check if this static key cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isStaticKeyCached() {
         return this.staticKeyCache != null;
     }
 
+    /**
+     * Check if this account type-64 identifier cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isSteam64Cached() {
         return this.id64Cache != null;
     }
 
+    /**
+     * Check if this account type-2 identifier cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isSteam2Cached() {
         return this.id2Cache != null;
     }
 
+    /**
+     * Check if this account type-3 identifier cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isSteam3Cached() {
         return this.id3Cache != null;
     }
 
+    /**
+     * Check if this invite code cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isInviteCodeCached() {
         return this.inviteCodeCache != null;
     }
 
+    /**
+     * Check if this CS:GO friend code cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isCsgoCodeCached() {
         return this.csgoCodeCache != null;
     }
 
+    /**
+     * Check if this /profiles/%id-64% URL cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isSteam64UrlCached() {
         return this.id64UrlCache != null;
     }
 
+    /**
+     * Check if this /profiles/%id-3% URL cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isSteam3UrlCached() {
         return this.id3UrlCache != null;
     }
 
+    /**
+     * Check if this /user/%invite-code% URL cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isSteamUserUrlCached() {
         return this.userUrlCache != null;
     }
 
+    /**
+     * Check if this /p/%invite-code% URL cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isSteamInviteUrlCached() {
         return this.inviteUrlCache != null;
     }
 
+    /**
+     * Check if this /profiles/%id-64% China URL cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isSteam64ChinaUrlCached() {
         return this.chinaUrlCache != null;
     }
 
+    /**
+     * Check if this hash code cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isHashCodeCached() {
         return this.hashCodeCache != null;
     }
 
+    /**
+     * Check if this string cache isn't null.
+     *
+     * @return  {@code true} if not null
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isStringCached() {
         return this.stringCache != null;
     }
 
+    /**
+     * Get this account type-32 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type-32 identifier is null.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  account type-32 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Integer getXuidOrElse(
@@ -367,15 +642,43 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getXuidOrNull(), defaultValue);
     }
 
+    /**
+     * Get this account type-32 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type-32 identifier is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type-32 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Integer getXuidOrElse(
             @Nullable
-            final Supplier<@UnknownNullability Integer> defaltValueSupplier
+            final Supplier<@UnknownNullability Integer> defaultValueSupplier
     ) {
-        return UwObject.ifNull(this.getXuidOrNull(), defaltValueSupplier);
+        return UwObject.ifNull(this.getXuidOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this account type-32 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #getXuidOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type-32 identifier is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type-32 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Integer getXuidOrElse(
@@ -385,30 +688,96 @@ public final class SteamId implements Serializable, Cloneable {
         return this.getXuidOrElse((@Nullable Supplier<@UnknownNullability Integer>) defaultValueSupplier);
     }
 
+    /**
+     * Get this account type-32 identifier
+     * or return the {@link USteamId#BASE_XUID} on failure.
+     *
+     * <p>Wraps {@link #getXuidOrElse(Integer)}
+     * w/ {@link USteamId#BASE_XUID} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type-32 identifier is null.</li>
+     * </ul>
+     *
+     * @return  account type-32 identifier or the {@link USteamId#BASE_XUID}
+     */
     @NotNull
     @Contract(pure = true)
     public Integer getXuidOrBase() {
         return this.getXuidOrElse(USteamId.BASE_XUID);
     }
 
+    /**
+     * Get this account type-32 identifier
+     * or return the {@link USteamId#MIN_XUID} on failure.
+     *
+     * <p>Wraps {@link #getXuidOrElse(Integer)}
+     * w/ {@link USteamId#MIN_XUID} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type-32 identifier is null.</li>
+     * </ul>
+     *
+     * @return  account type-32 identifier or {@link USteamId#MIN_XUID}
+     */
     @NotNull
     @Contract(pure = true)
     public Integer getXuidOrMin() {
         return this.getXuidOrElse(USteamId.MIN_XUID);
     }
 
+    /**
+     * Get this account type-32 identifier
+     * or return the {@link USteamId#MAX_XUID} on failure.
+     *
+     * <p>Wraps {@link #getXuidOrElse(Integer)}
+     * w/ {@link USteamId#MAX_XUID} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type-32 identifier is null.</li>
+     * </ul>
+     *
+     * @return  account type-32 identifier or {@link USteamId#MAX_XUID}
+     */
     @NotNull
     @Contract(pure = true)
     public Integer getXuidOrMax() {
         return this.getXuidOrElse(USteamId.MAX_XUID);
     }
 
+    /**
+     * Get this account type-32 identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type-32 identifier is null.</li>
+     * </ul>
+     *
+     * @return  account type-32 identifier or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Integer getXuidOrNull() {
         return this.xuid;
     }
 
+    /**
+     * Get this account universe type enum
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  account universe type enum or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public ESteamUniverse getUniverseTypeOrElse(
@@ -418,6 +787,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getUniverseTypeOrNull(), defaultValue);
     }
 
+    /**
+     * Get this account universe type enum
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier supplier to get the default value from, may be null
+     *
+     * @return  account universe type enum or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public ESteamUniverse getUniverseTypeOrElse(
@@ -427,6 +809,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getUniverseTypeOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this account universe type enum
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #getUniverseTypeOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier supplier to get the default value from, may be null
+     *
+     * @return  account universe type enum or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public ESteamUniverse getUniverseTypeOrElse(
@@ -436,30 +833,96 @@ public final class SteamId implements Serializable, Cloneable {
         return this.getUniverseTypeOrElse((@Nullable Supplier<@UnknownNullability ESteamUniverse>) defaultValueSupplier);
     }
 
+    /**
+     * Get this account universe type enum
+     * or return the {@link ESteamUniverse#BASE} instance on failure.
+     *
+     * <p>Wraps {@link #getUniverseTypeOrElse(ESteamUniverse)}
+     * w/ {@link ESteamUniverse#BASE} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @return  account universe type enum or {@link ESteamUniverse#BASE}
+     */
     @NotNull
     @Contract(pure = true)
     public ESteamUniverse getUniverseTypeOrBase() {
         return this.getUniverseTypeOrElse(ESteamUniverse.BASE);
     }
 
+    /**
+     * Get this account universe type enum
+     * or return the {@link ESteamUniverse#MIN} instance on failure.
+     *
+     * <p>Wraps {@link #getUniverseTypeOrElse(ESteamUniverse)}
+     * w/ {@link ESteamUniverse#MIN} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @return  account universe type enum or {@link ESteamUniverse#MIN}
+     */
     @NotNull
     @Contract(pure = true)
     public ESteamUniverse getUniverseTypeOrMin() {
         return this.getUniverseTypeOrElse(ESteamUniverse.MIN);
     }
 
+    /**
+     * Get this account universe type enum
+     * or return the {@link ESteamUniverse#MAX} instance on failure.
+     *
+     * <p>Wraps {@link #getUniverseTypeOrElse(ESteamUniverse)}
+     * w/ {@link ESteamUniverse#MAX} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @return  account universe type enum or {@link ESteamUniverse#MAX}
+     */
     @NotNull
     @Contract(pure = true)
     public ESteamUniverse getUniverseTypeOrMax() {
         return this.getUniverseTypeOrElse(ESteamUniverse.MAX);
     }
 
+    /**
+     * Get this account universe type enum
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @return  account universe type enum or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public ESteamUniverse getUniverseTypeOrNull() {
         return this.universe;
     }
 
+    /**
+     * Get this account universe type identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  account universe type identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Integer getUniverseTypeIdOrElse(
@@ -469,6 +932,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getUniverseTypeIdOrNull(), defaultValue);
     }
 
+    /**
+     * Get this account universe type identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account universe type identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Integer getUniverseTypeIdOrElse(
@@ -478,6 +954,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getUniverseTypeIdOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this account universe type identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #getUniverseTypeIdOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account universe type identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Integer getUniverseTypeIdOrElse(
@@ -487,30 +978,96 @@ public final class SteamId implements Serializable, Cloneable {
         return this.getUniverseTypeIdOrElse((@Nullable Supplier<@UnknownNullability Integer>) defaultValueSupplier);
     }
 
+    /**
+     * Get this account universe type identifier
+     * or return the {@link USteamUniverse#BASE} on failure.
+     *
+     * <p>Wraps {@link #getUniverseTypeIdOrElse(Integer)}
+     * w/ {@link USteamUniverse#BASE} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @return  account universe type identifier or {@link USteamUniverse#BASE}
+     */
     @NotNull
     @Contract(pure = true)
     public Integer getUniverseTypeIdOrBase() {
         return this.getUniverseTypeIdOrElse(USteamUniverse.BASE);
     }
 
+    /**
+     * Get this account universe type identifier
+     * or return the {@link USteamUniverse#MIN} on failure.
+     *
+     * <p>Wraps {@link #getUniverseTypeIdOrElse(Integer)}
+     * w/ {@link USteamUniverse#MIN} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @return  account universe type identifier or {@link USteamUniverse#MIN}
+     */
     @NotNull
     @Contract(pure = true)
     public Integer getUniverseTypeIdOrMin() {
         return this.getUniverseTypeIdOrElse(USteamUniverse.MIN);
     }
 
+    /**
+     * Get this account universe type identifier
+     * or return the {@link USteamUniverse#MAX} on failure.
+     *
+     * <p>Wraps {@link #getUniverseTypeIdOrElse(Integer)}
+     * w/ {@link USteamUniverse#MAX} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @return  account universe type identifier or {@link USteamUniverse#MAX}
+     */
     @NotNull
     @Contract(pure = true)
     public Integer getUniverseTypeIdOrMax() {
         return this.getUniverseTypeIdOrElse(USteamUniverse.MAX);
     }
 
+    /**
+     * Get this account universe type identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account universe type enum is null.</li>
+     * </ul>
+     *
+     * @return  account universe type identifier or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Integer getUniverseTypeIdOrNull() {
         return UwObject.ifNotNullNoCheck(this.getUniverseTypeOrNull(), ESteamUniverse::getId);
     }
 
+    /**
+     * Get this account instance type enum
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  account instance type enum or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public ESteamInstance getInstanceTypeOrElse(
@@ -520,6 +1077,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getInstanceTypeOrNull(), defaultValue);
     }
 
+    /**
+     * Get this account instance type enum
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account instance type enum or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public ESteamInstance getInstanceTypeOrElse(
@@ -529,6 +1099,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getInstanceTypeOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this account instance type enum
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #getInstanceTypeOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account instance type enum or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public ESteamInstance getInstanceTypeOrElse(
@@ -538,24 +1123,76 @@ public final class SteamId implements Serializable, Cloneable {
         return this.getInstanceTypeOrElse((@Nullable Supplier<@UnknownNullability ESteamInstance>) defaultValueSupplier);
     }
 
+    /**
+     * Get this account instance type enum
+     * or return the {@link ESteamInstance#MIN} instance on failure.
+     *
+     * <p>Wraps {@link #getInstanceTypeOrElse(ESteamInstance)}
+     * w/ {@link ESteamInstance#MIN} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @return  account instance type enum or {@link ESteamInstance#MIN}
+     */
     @NotNull
     @Contract(pure = true)
     public ESteamInstance getInstanceTypeOrMin() {
         return this.getInstanceTypeOrElse(ESteamInstance.MIN);
     }
 
+    /**
+     * Get this account instance type enum
+     * or return the {@link ESteamInstance#MAX} instance on failure.
+     *
+     * <p>Wraps {@link #getInstanceTypeOrElse(ESteamInstance)}
+     * w/ {@link ESteamInstance#MAX} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @return  account instance type enum or {@link ESteamInstance#MAX}
+     */
     @NotNull
     @Contract(pure = true)
     public ESteamInstance getInstanceTypeOrMax() {
         return this.getInstanceTypeOrElse(ESteamInstance.MAX);
     }
 
+    /**
+     * Get this account instance type enum
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @return  account instance type enum or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public ESteamInstance getInstanceTypeOrNull() {
         return this.instance;
     }
 
+    /**
+     * Get this account instance type identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  account instance type identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Integer getInstanceTypeIdOrElse(
@@ -565,6 +1202,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getInstanceTypeIdOrNull(), defaultValue);
     }
 
+    /**
+     * Get this account instance type identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account instance type identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Integer getInstanceTypeIdOrElse(
@@ -574,6 +1224,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getInstanceTypeIdOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this account instance type identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #getInstanceTypeIdOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account instance type identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Integer getInstanceTypeIdOrElse(
@@ -583,24 +1248,76 @@ public final class SteamId implements Serializable, Cloneable {
         return this.getInstanceTypeIdOrElse((@Nullable Supplier<@UnknownNullability Integer>) defaultValueSupplier);
     }
 
+    /**
+     * Get this account instance type identifier
+     * or return the {@link USteamInstance#MIN} on failure.
+     *
+     * <p>Wraps {@link #getInstanceTypeIdOrElse(Integer)}
+     * w/ {@link USteamInstance#MIN} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @return  account instance type identifier or {@link USteamInstance#MIN}
+     */
     @NotNull
     @Contract(pure = true)
     public Integer getInstanceTypeIdOrMin() {
         return this.getInstanceTypeIdOrElse(USteamInstance.MIN);
     }
 
+    /**
+     * Get this account instance type identifier
+     * or return the {@link USteamInstance#MAX} on failure.
+     *
+     * <p>Wraps {@link #getInstanceTypeIdOrElse(Integer)}
+     * w/ {@link USteamInstance#MAX} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @return  account instance type identifier or {@link USteamInstance#MAX}
+     */
     @NotNull
     @Contract(pure = true)
     public Integer getInstanceTypeIdOrMax() {
         return this.getInstanceTypeIdOrElse(USteamInstance.MAX);
     }
 
+    /**
+     * Get this account instance type identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account instance type enum is null.</li>
+     * </ul>
+     *
+     * @return  account instance type identifier or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Integer getInstanceTypeIdOrNull() {
         return UwObject.ifNotNullNoCheck(this.getInstanceTypeOrNull(), ESteamInstance::getId);
     }
 
+    /**
+     * Get this account type enum
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  account type enum or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public ESteamAccount getAccountTypeOrElse(
@@ -610,6 +1327,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getAccountTypeOrNull(), defaultValue);
     }
 
+    /**
+     * Get this account type enum
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type enum or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public ESteamAccount getAccountTypeOrElse(
@@ -619,6 +1349,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getAccountTypeOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this account type enum
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type enum or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public ESteamAccount getAccountTypeOrElse(
@@ -628,30 +1373,96 @@ public final class SteamId implements Serializable, Cloneable {
         return this.getAccountTypeOrElse((@Nullable Supplier<@UnknownNullability ESteamAccount>) defaultValueSupplier);
     }
 
+    /**
+     * Get this account type enum
+     * or return the {@link ESteamAccount#BASE} instance on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeOrElse(ESteamAccount)}
+     * w/ {@link ESteamAccount#BASE} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type enum or {@link ESteamAccount#BASE}
+     */
     @NotNull
     @Contract(pure = true)
     public ESteamAccount getAccountTypeOrBase() {
         return this.getAccountTypeOrElse(ESteamAccount.BASE);
     }
 
+    /**
+     * Get this account type enum
+     * or return the {@link ESteamAccount#MIN} instance on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeOrElse(ESteamAccount)}
+     * w/ {@link ESteamAccount#MIN} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type enum or {@link ESteamAccount#MIN}
+     */
     @NotNull
     @Contract(pure = true)
     public ESteamAccount getAccountTypeOrMin() {
         return this.getAccountTypeOrElse(ESteamAccount.MIN);
     }
 
+    /**
+     * Get this account type enum
+     * or return the {@link ESteamAccount#MAX} instance on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeOrElse(ESteamAccount)}
+     * w/ {@link ESteamAccount#MAX} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type enum or {@link ESteamAccount#MAX}
+     */
     @NotNull
     @Contract(pure = true)
     public ESteamAccount getAccountTypeOrMax() {
         return this.getAccountTypeOrElse(ESteamAccount.MAX);
     }
 
+    /**
+     * Get this account type enum
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type enum or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public ESteamAccount getAccountTypeOrNull() {
         return this.account;
     }
 
+    /**
+     * Get this account type identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  account type identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Integer getAccountTypeIdOrElse(
@@ -661,6 +1472,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getAccountTypeIdOrNull(), defaultValue);
     }
 
+    /**
+     * Get this account type identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Integer getAccountTypeIdOrElse(
@@ -670,6 +1494,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getAccountTypeIdOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this account type identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeIdOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Integer getAccountTypeIdOrElse(
@@ -679,30 +1518,96 @@ public final class SteamId implements Serializable, Cloneable {
         return this.getAccountTypeIdOrElse((@Nullable Supplier<@UnknownNullability Integer>) defaultValueSupplier);
     }
 
+    /**
+     * Get this account type identifier
+     * or return the {@link USteamAccount#BASE_ID} on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeIdOrElse(Integer)}
+     * w/ {@link USteamAccount#BASE_ID} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type identifier or {@link USteamAccount#BASE_ID}
+     */
     @NotNull
     @Contract(pure = true)
     public Integer getAccountTypeIdOrBase() {
         return this.getAccountTypeIdOrElse(USteamAccount.BASE_ID);
     }
 
+    /**
+     * Get this account type identifier
+     * or return the {@link USteamAccount#MIN_ID} on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeIdOrElse(Integer)}
+     * w/ {@link USteamAccount#MIN_ID} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type identifier or {@link USteamAccount#MIN_ID}
+     */
     @NotNull
     @Contract(pure = true)
     public Integer getAccountTypeIdOrMin() {
         return this.getAccountTypeIdOrElse(USteamAccount.MIN_ID);
     }
 
+    /**
+     * Get this account type identifier
+     * or return the {@link USteamAccount#MAX_ID} on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeIdOrElse(Integer)}
+     * w/ {@link USteamAccount#MAX_ID} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type identifier or {@link USteamAccount#MAX_ID}
+     */
     @NotNull
     @Contract(pure = true)
     public Integer getAccountTypeIdOrMax() {
         return this.getAccountTypeIdOrElse(USteamAccount.MAX_ID);
     }
 
+    /**
+     * Get this account type identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type identifier or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Integer getAccountTypeIdOrNull() {
         return UwObject.ifNotNullNoCheck(this.getAccountTypeOrNull(), ESteamAccount::getId);
     }
 
+    /**
+     * Get this account type character
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  account type character or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Character getAccountTypeCharOrElse(
@@ -712,6 +1617,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getAccountTypeCharOrNull(), defaultValue);
     }
 
+    /**
+     * Get this account type character
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type character or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Character getAccountTypeCharOrElse(
@@ -721,6 +1639,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.getAccountTypeCharOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this account type character
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeCharOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type character or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Character getAccountTypeCharOrElse(
@@ -730,114 +1663,243 @@ public final class SteamId implements Serializable, Cloneable {
         return this.getAccountTypeCharOrElse((@Nullable Supplier<@UnknownNullability Character>) defaultValueSupplier);
     }
 
+    /**
+     * Get this account type character
+     * or return the {@link USteamAccount#BASE_CHAR} on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeCharOrElse(Character)}
+     * w/ {@link USteamAccount#BASE_CHAR} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type character or {@link USteamAccount#BASE_CHAR}
+     */
     @NotNull
     @Contract(pure = true)
     public Character getAccountTypeCharOrBase() {
         return this.getAccountTypeCharOrElse(USteamAccount.BASE_CHAR);
     }
 
+    /**
+     * Get this account type character
+     * or return the {@link USteamAccount#MIN_CHAR} on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeCharOrElse(Character)}
+     * w/ {@link USteamAccount#MIN_CHAR} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type character or {@link USteamAccount#MIN_CHAR}
+     */
     @NotNull
     @Contract(pure = true)
     public Character getAccountTypeCharOrMin() {
         return this.getAccountTypeCharOrElse(USteamAccount.MIN_CHAR);
     }
 
+    /**
+     * Get this account type character
+     * or return the {@link USteamAccount#MAX_CHAR} on failure.
+     *
+     * <p>Wraps {@link #getAccountTypeCharOrElse(Character)}
+     * w/ {@link USteamAccount#MAX_CHAR} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type character or {@link USteamAccount#MAX_CHAR}
+     */
     @NotNull
     @Contract(pure = true)
     public Character getAccountTypeCharOrMax() {
         return this.getAccountTypeCharOrElse(USteamAccount.MAX_CHAR);
     }
 
+    /**
+     * Get this account type character
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This account type enum is null.</li>
+     * </ul>
+     *
+     * @return  account type character or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Character getAccountTypeCharOrNull() {
         return UwObject.ifNotNullNoCheck(this.getAccountTypeOrNull(), ESteamAccount::getChar);
     }
 
+    /**
+     * Get this is valid cache.
+     *
+     * @return  is valid cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Boolean getIsValidCache() {
         return this.isValidCache;
     }
 
+    /**
+     * Get this static key cache.
+     *
+     * @return  static key cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Long getStaticKeyCache() {
         return this.staticKeyCache;
     }
 
+    /**
+     * Get this account type-64 identifier cache.
+     *
+     * @return  account type-64 identifier cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Long getSteam64Cache() {
         return this.id64Cache;
     }
 
+    /**
+     * Get this account type-2 identifier cache.
+     *
+     * @return  account type-2 identifier cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getSteam2Cache() {
         return this.id2Cache;
     }
 
+    /**
+     * Get this account type-3 identifier cache.
+     *
+     * @return  account type-3 identifier cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getSteam3Cache() {
         return this.id3Cache;
     }
 
+    /**
+     * Get this invite code cache.
+     *
+     * @return  invite code cache.
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getInviteCodeCache() {
         return this.inviteCodeCache;
     }
 
+    /**
+     * Get this CS:GO friend code cache.
+     *
+     * @return  CS:GO friend code cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getCsgoCodeCache() {
         return this.csgoCodeCache;
     }
 
+    /**
+     * Get this /profiles/%id-64% URL cache.
+     *
+     * @return  /profiles/%id-64% URL cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getSteam64UrlCache() {
         return this.id64UrlCache;
     }
 
+    /**
+     * Get this /profiles/%id-3% URL cache.
+     *
+     * @return  /profiles/%id-3% URL cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getSteam3UrlCache() {
         return this.id3UrlCache;
     }
 
+    /**
+     * Get this /user/%invite-code% URL cache.
+     *
+     * @return  /user/%invite-code% URL cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getSteamUserUrlCache() {
         return this.userUrlCache;
     }
 
+    /**
+     * Get this /p/%invite-code% URL cache.
+     *
+     * @return  /p/%invite-code% URL cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getSteamInviteUrlCache() {
         return this.inviteUrlCache;
     }
 
+    /**
+     * Get this /profiles/%id-64% China URL cache.
+     *
+     * @return  /profiles/%id-64% China URL cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getSteam64ChinaUrlCache() {
         return this.chinaUrlCache;
     }
 
+    /**
+     * Get this hash code cache.
+     *
+     * @return  hash code cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Integer getHashCodeCache() {
         return this.hashCodeCache;
     }
 
+    /**
+     * Get this string cache.
+     *
+     * @return  string cache
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String getStringCache() {
         return this.stringCache;
     }
 
+    /**
+     * Check if this instance is valid.
+     *
+     * @return  {@code true} if valid
+     *          or {@code false} otherwise
+     */
     @Contract(pure = true)
     public boolean isValid() {
         if (this.isValidCache != null) {
@@ -874,6 +1936,22 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Get this instance as a static key
+     * or return a default value on failure.
+     *
+     * <p>Used for grouping accounts w/ different account instances.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     *     <li>Caught {@link ArithmeticException}.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  static key or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Long toStaticKeyOrElse(
@@ -883,6 +1961,22 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toStaticKeyOrNull(), defaultValue);
     }
 
+    /**
+     * Get this instance as a static key
+     * or return a default value on failure.
+     *
+     * <p>Used for grouping accounts w/ different account instances.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     *     <li>Caught {@link ArithmeticException}.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  static key or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Long toStaticKeyOrElse(
@@ -892,6 +1986,24 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toStaticKeyOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a static key
+     * or return a default value on failure.
+     *
+     * <p>Used for grouping accounts w/ different account instances.
+     *
+     * <p>Wraps {@link #toStaticKeyOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     *     <li>Caught {@link ArithmeticException}.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier supplier to get the default value from, may be null
+     *
+     * @return  static key or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Long toStaticKeyOrElse(
@@ -901,24 +2013,80 @@ public final class SteamId implements Serializable, Cloneable {
         return this.toStaticKeyOrElse((@Nullable Supplier<@UnknownNullability Long>) defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a static key
+     * or return {@code 0} on failure.
+     *
+     * <p>Used for grouping accounts w/ different account instances.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     *     <li>Caught {@link ArithmeticException}.</li>
+     * </ul>
+     *
+     * @return  static key or {@code 0}
+     */
     @NotNull
     @Contract(pure = true)
     public Long toStaticKeyOrZero() {
         return this.toStaticKeyOrElse(0L);
     }
 
+    /**
+     * Get this instance as a static key
+     * or return the {@link Long#MIN_VALUE} on failure.
+     *
+     * <p>Used for grouping accounts w/ different account instances.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     *     <li>Caught {@link ArithmeticException}.</li>
+     * </ul>
+     *
+     * @return  static key or {@link Long#MIN_VALUE}
+     */
     @NotNull
     @Contract(pure = true)
     public Long toStaticKeyOrMin() {
         return this.toStaticKeyOrElse(Long.MIN_VALUE);
     }
 
+    /**
+     * Get this instance as a static key
+     * or return the {@link Long#MAX_VALUE} on failure.
+     *
+     * <p>Used for grouping accounts w/ different account instances.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     *     <li>Caught {@link ArithmeticException}.</li>
+     * </ul>
+     *
+     * @return  static key or {@link Long#MAX_VALUE}
+     */
     @NotNull
     @Contract(pure = true)
     public Long toStaticKeyOrMax() {
         return this.toStaticKeyOrElse(Long.MAX_VALUE);
     }
 
+    /**
+     * Get this instance as a static key
+     * or return {@code null} on failure.
+     *
+     * <p>Used for grouping accounts w/ different account instances.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     *     <li>Caught {@link ArithmeticException}.</li>
+     * </ul>
+     *
+     * @return  static key or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Long toStaticKeyOrNull() {
@@ -953,6 +2121,19 @@ public final class SteamId implements Serializable, Cloneable {
         return null;
     }
 
+    /**
+     * Get this instance as an account type-64 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  account type-64 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Long toSteam64OrElse(
@@ -962,6 +2143,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam64OrNull(), defaultValue);
     }
 
+    /**
+     * Get this instance as an account type-64 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type-64 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Long toSteam64OrElse(
@@ -971,6 +2165,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam64OrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as an account type-64 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #toSteam64OrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type-64 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public Long toSteam64OrElse(
@@ -980,24 +2189,77 @@ public final class SteamId implements Serializable, Cloneable {
         return this.toSteam64OrElse((@Nullable Supplier<@UnknownNullability Long>) defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as an account type-64 identifier
+     * or return the {@link USteamId#BASE_ID64} on failure.
+     *
+     * <p>Wraps {@link #toSteam64OrElse(Long)}
+     * w/ {@link USteamId#BASE_ID64} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  account type-64 identifier or {@link USteamId#BASE_ID64}
+     */
     @NotNull
     @Contract(pure = true)
     public Long toSteam64OrBase() {
         return this.toSteam64OrElse(USteamId.BASE_ID64);
     }
 
+    /**
+     * Get this instance as an account type-64 identifier
+     * or return the {@link USteamId#MIN_ID64} on failure.
+     *
+     * <p>Wraps {@link #toSteam64OrElse(Long)}
+     * w/ {@link USteamId#MIN_ID64} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  account type-64 identifier or {@link USteamId#MIN_ID64}
+     */
     @NotNull
     @Contract(pure = true)
     public Long toSteam64OrMin() {
         return this.toSteam64OrElse(USteamId.MIN_ID64);
     }
 
+    /**
+     * Get this instance as an account type-64 identifier
+     * or return the {@link USteamId#MAX_ID64} on failure.
+     *
+     * <p>Wraps {@link #toSteam64OrElse(Long)}
+     * w/ {@link USteamId#MAX_ID64} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  account type-64 identifier or {@link USteamId#MAX_ID64}
+     */
     @NotNull
     @Contract(pure = true)
     public Long toSteam64OrMax() {
         return this.toSteam64OrElse(USteamId.MAX_ID64);
     }
 
+    /**
+     * Get this instance as an account type-64 identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  account type-64 identifier or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public Long toSteam64OrNull() {
@@ -1026,6 +2288,19 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Get this instance as an account type-2 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  account type-2 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteam2OrElse(
@@ -1035,6 +2310,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam2OrNull(), defaultValue);
     }
 
+    /**
+     * Get this instance as an account type-2 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type-2 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteam2OrElse(
@@ -1044,6 +2332,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam2OrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as an account type-2 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #toSteam2OrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type-2 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteam2OrElse(
@@ -1053,12 +2356,37 @@ public final class SteamId implements Serializable, Cloneable {
         return this.toSteam2OrElse((@Nullable Supplier<@UnknownNullability String>) defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as an account type-2 identifier
+     * or return an empty string on failure.
+     *
+     * <p>Wraps {@link #toSteam2OrElse(String)}
+     * w/ {@link UwString#EMPTY} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  account type-2 identifier or the empty string
+     */
     @NotNull
     @Contract(pure = true)
     public String toSteam2OrEmpty() {
         return this.toSteam2OrElse(UwString.EMPTY);
     }
 
+    /**
+     * Get this instance as an account type-2 identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  account type-2 identifier or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteam2OrNull() {
@@ -1083,6 +2411,19 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Get this instance as an account type-3 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  account type-3 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteam3OrElse(
@@ -1092,6 +2433,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam3OrNull(), defaultValue);
     }
 
+    /**
+     * Get this instance as an account type-3 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type-3 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteam3OrElse(
@@ -1101,6 +2455,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam3OrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as an account type-3 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #toSteam3OrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  account type-3 identifier or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteam3OrElse(
@@ -1110,12 +2479,37 @@ public final class SteamId implements Serializable, Cloneable {
         return this.toSteam3OrElse((@Nullable Supplier<@UnknownNullability String>) defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as an account type-3 identifier
+     * or return an empty string on failure.
+     *
+     * <p>Wraps {@link #toSteam3OrElse(String)}
+     * w/ {@link UwString#EMPTY} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  account type-3 identifier or the empty string
+     */
     @NotNull
     @Contract(pure = true)
     public String toSteam3OrEmpty() {
         return this.toSteam3OrElse(UwString.EMPTY);
     }
 
+    /**
+     * Get this instance as an account type-3 identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  account type-3 identifier or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteam3OrNull() {
@@ -1165,6 +2559,19 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Get this instance as a Steam invite code
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  invite code or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toInviteCodeOrElse(
@@ -1174,6 +2581,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toInviteCodeOrNull(), defaultValue);
     }
 
+    /**
+     * Get this instance as a Steam invite code
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  invite code or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toInviteCodeOrElse(
@@ -1183,6 +2603,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toInviteCodeOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam invite code
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #toInviteCodeOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  invite code or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toInviteCodeOrElse(
@@ -1192,12 +2627,37 @@ public final class SteamId implements Serializable, Cloneable {
         return this.toInviteCodeOrElse((@Nullable Supplier<@UnknownNullability String>) defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam invite code
+     * or return an empty string on failure.
+     *
+     * <p>Wraps {@link #toInviteCodeOrElse(String)}
+     * w/ {@link UwString#EMPTY} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  invite code or the empty string
+     */
     @NotNull
     @Contract(pure = true)
     public String toInviteCodeOrEmpty() {
         return this.toInviteCodeOrElse(UwString.EMPTY);
     }
 
+    /**
+     * Get this instance as a Steam invite code
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  invite code or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toInviteCodeOrNull() {
@@ -1218,6 +2678,19 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Get this instance as a CS:GO friend code
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  CS:GO friend code or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toCsgoCodeOrElse(
@@ -1227,6 +2700,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toCsgoCodeOrNull(), defaultValue);
     }
 
+    /**
+     * Get this instance as a CS:GO friend code
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  CS:GO friend code or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toCsgoCodeOrElse(
@@ -1236,6 +2722,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toCsgoCodeOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a CS:GO friend code
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #toCsgoCodeOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  CS:GO friend code or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toCsgoCodeOrElse(
@@ -1245,12 +2746,37 @@ public final class SteamId implements Serializable, Cloneable {
         return this.toCsgoCodeOrElse((@Nullable Supplier<@UnknownNullability String>) defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a CS:GO friend code
+     * or return an empty string on failure.
+     *
+     * <p>Wraps {@link #toCsgoCodeOrElse(String)}
+     * w/ {@link UwString#EMPTY} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  CS:GO friend code or the empty string
+     */
     @NotNull
     @Contract(pure = true)
     public String toCsgoCodeOrEmpty() {
         return this.toCsgoCodeOrElse(UwString.EMPTY);
     }
 
+    /**
+     * Get this instance as a CS:GO friend code
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  CS:GO friend code or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toCsgoCodeOrNull() {
@@ -1271,6 +2797,19 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Get this instance as a Steam /profiles/%id-64% URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  /profiles/%id-64% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteam64UrlOrElse(
@@ -1280,6 +2819,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam64UrlOrNull(), defaultValue);
     }
 
+    /**
+     * Get this instance as a Steam /profiles/%id-64% URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  /profiles/%id-64% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteam64UrlOrElse(
@@ -1289,6 +2841,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam64UrlOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam /profiles/%id-64% URL
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #toSteam64UrlOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  /profiles/%id-64% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteam64UrlOrElse(
@@ -1298,12 +2865,37 @@ public final class SteamId implements Serializable, Cloneable {
         return this.toSteam64UrlOrElse((@Nullable Supplier<@UnknownNullability String>) defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam /profiles/%id-64% URL
+     * or return an empty string on failure.
+     *
+     * <p>Wraps {@link #toSteam64UrlOrElse(String)}
+     * w/ {@link UwString#EMPTY} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  /profiles/%id-64% URL or the empty string
+     */
     @NotNull
     @Contract(pure = true)
     public String toSteam64UrlOrEmpty() {
         return this.toSteam64UrlOrElse(UwString.EMPTY);
     }
 
+    /**
+     * Get this instance as a Steam /profiles/%id-64% URL
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  /profiles/%id-64% URL or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteam64UrlOrNull() {
@@ -1325,6 +2917,19 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Get this instance as a Steam /profiles/%id-3% URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  /profiles/%id-3% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteam3UrlOrElse(
@@ -1334,6 +2939,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam3UrlOrNull(), defaultValue);
     }
 
+    /**
+     * Get this instance as a Steam /profiles/%id-3% URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  /profiles/%id-3% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteam3UrlOrElse(
@@ -1343,6 +2961,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam3UrlOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam /profiles/%id-3% URL
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #toSteam3UrlOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  /profiles/%id-3% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteam3UrlOrElse(
@@ -1352,12 +2985,37 @@ public final class SteamId implements Serializable, Cloneable {
         return this.toSteam3UrlOrElse((@Nullable Supplier<@UnknownNullability String>) defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam /profiles/%id-3% URL
+     * or return an empty string on failure.
+     *
+     * <p>Wraps {@link #toSteam3UrlOrElse(String)}
+     * w/ {@link UwString#EMPTY} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  /profiles/%id-3% URL or the empty string
+     */
     @NotNull
     @Contract(pure = true)
     public String toSteam3UrlOrEmpty() {
         return this.toSteam3UrlOrElse(UwString.EMPTY);
     }
 
+    /**
+     * Get this instance as a Steam /profiles/%id-3% URL
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  /profiles/%id-3% URL or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteam3UrlOrNull() {
@@ -1379,6 +3037,19 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Get this instance as a Steam /user/%invite-code% URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  /user/%invite-code% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteamUserUrlOrElse(
@@ -1388,6 +3059,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteamUserUrlOrNull(), defaultValue);
     }
 
+    /**
+     * Get this instance as a Steam /user/%invite-code% URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  /user/%invite-code% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteamUserUrlOrElse(
@@ -1397,6 +3081,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteamUserUrlOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam /user/%invite-code% URL
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #toSteamUserUrlOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  /user/%invite-code% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteamUserUrlOrElse(
@@ -1406,12 +3105,37 @@ public final class SteamId implements Serializable, Cloneable {
         return this.toSteamUserUrlOrElse((@Nullable Supplier<@UnknownNullability String>) defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam /user/%invite-code% URL
+     * or return an empty string on failure.
+     *
+     * <p>Wraps {@link #toSteamUserUrlOrElse(String)}
+     * w/ {@link UwString#EMPTY} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  /user/%invite-code% URL or the empty string
+     */
     @NotNull
     @Contract(pure = true)
     public String toSteamUserUrlOrEmpty() {
         return this.toSteamUserUrlOrElse(UwString.EMPTY);
     }
 
+    /**
+     * Get this instance as a Steam /user/%invite-code% URL
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  /user/%invite-code% URL or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteamUserUrlOrNull() {
@@ -1433,6 +3157,19 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Get this instance as a Steam /p/%invite-code% URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  /p/%invite-code% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteamInviteUrlOrElse(
@@ -1442,6 +3179,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteamInviteUrlOrNull(), defaultValue);
     }
 
+    /**
+     * Get this instance as a Steam /p/%invite-code% URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  /p/%invite-code% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteamInviteUrlOrElse(
@@ -1451,6 +3201,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteamInviteUrlOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam /p/%invite-code% URL
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #toSteamInviteUrlOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  /p/%invite-code% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteamInviteUrlOrElse(
@@ -1460,12 +3225,37 @@ public final class SteamId implements Serializable, Cloneable {
         return this.toSteamInviteUrlOrElse((@Nullable Supplier<@UnknownNullability String>) defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam /p/%invite-code% URL
+     * or return an empty string on failure.
+     *
+     * <p>Wraps {@link #toSteamInviteUrlOrElse(String)}
+     * w/ {@link UwString#EMPTY} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  /p/%invite-code% URL or the empty string
+     */
     @NotNull
     @Contract(pure = true)
     public String toSteamInviteUrlOrEmpty() {
         return this.toSteamInviteUrlOrElse(UwString.EMPTY);
     }
 
+    /**
+     * Get this instance as a Steam /p/%invite-code% URL
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  /p/%invite-code% URL or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteamInviteUrlOrNull() {
@@ -1487,6 +3277,19 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Get this instance as a Steam China /profiles/%id-64% URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  /profiles/%id-64% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteam64ChinaUrlOrElse(
@@ -1496,6 +3299,19 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam64ChinaUrlOrNull(), defaultValue);
     }
 
+    /**
+     * Get this instance as a Steam China /profiles/%id-64% URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  /profiles/%id-64% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteam64ChinaUrlOrElse(
@@ -1505,6 +3321,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(this.toSteam64ChinaUrlOrNull(), defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam China /profiles/%id-64% URL
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #toSteam64ChinaUrlOrElse(Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  /profiles/%id-64% URL or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public String toSteam64ChinaUrlOrElse(
@@ -1514,12 +3345,37 @@ public final class SteamId implements Serializable, Cloneable {
         return this.toSteam64ChinaUrlOrElse((@Nullable Supplier<@UnknownNullability String>) defaultValueSupplier);
     }
 
+    /**
+     * Get this instance as a Steam China /profiles/%id-64% URL
+     * or return an empty string on failure.
+     *
+     * <p>Wraps {@link #toSteam64ChinaUrlOrElse(String)}
+     * w/ {@link UwString#EMPTY} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  /profiles/%id-64% URL or the empty string
+     */
     @NotNull
     @Contract(pure = true)
     public String toSteam64ChinaUrlOrEmpty() {
         return this.toSteam64ChinaUrlOrElse(UwString.EMPTY);
     }
 
+    /**
+     * Get this instance as a Steam China /profiles/%id-64% URL
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>This instance isn't valid.</li>
+     * </ul>
+     *
+     * @return  /profiles/%id-64% URL or {@code null}
+     */
     @UnknownNullability
     @Contract(pure = true)
     public String toSteam64ChinaUrlOrNull() {
@@ -1541,6 +3397,14 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * w/ different account type-32 identifier value.
+     *
+     * @param xuid  new account type-32 identifier, may be null
+     *
+     * @return  new instance or this if values are equal
+     */
     @NotNull
     @Contract(pure = true)
     public SteamId withXuid(
@@ -1554,6 +3418,14 @@ public final class SteamId implements Serializable, Cloneable {
         return new SteamId(xuid, this.universe, this.instance, this.account);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * w/ different account universe type value.
+     *
+     * @param universe  new account universe type, may be null
+     *
+     * @return  new instance or this if values are equal
+     */
     @NotNull
     @Contract(pure = true)
     public SteamId withUniverseType(
@@ -1567,6 +3439,14 @@ public final class SteamId implements Serializable, Cloneable {
         return new SteamId(this.xuid, universe, this.instance, this.account);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * w/ different account universe type value.
+     *
+     * @param universe  new account universe type, may be null
+     *
+     * @return  new instance or this if values are equal
+     */
     @NotNull
     @Contract(pure = true)
     public SteamId withUniverseType(
@@ -1576,6 +3456,14 @@ public final class SteamId implements Serializable, Cloneable {
         return this.withUniverseType(ESteamUniverse.fromIdOrNull(universe));
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * w/ different account instance type value.
+     *
+     * @param instance  new account instance type, may be null
+     *
+     * @return  new instance or this if values are equal
+     */
     @NotNull
     @Contract(pure = true)
     public SteamId withInstanceType(
@@ -1589,6 +3477,14 @@ public final class SteamId implements Serializable, Cloneable {
         return new SteamId(this.xuid, this.universe, instance, this.account);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * w/ different account instance type value.
+     *
+     * @param instance  new account instance type, may be null
+     *
+     * @return  new instance or this if values are equal
+     */
     @NotNull
     @Contract(pure = true)
     public SteamId withInstanceType(
@@ -1598,6 +3494,14 @@ public final class SteamId implements Serializable, Cloneable {
         return this.withInstanceType(ESteamInstance.fromIdOrNull(instance));
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * w/ different account type value.
+     *
+     * @param account  new account type, may be null
+     *
+     * @return  new instance or this if values are equal
+     */
     @NotNull
     @Contract(pure = true)
     public SteamId withAccountType(
@@ -1611,6 +3515,14 @@ public final class SteamId implements Serializable, Cloneable {
         return new SteamId(this.xuid, this.universe, this.instance, account);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * w/ different account type value.
+     *
+     * @param account  new account type, may be null
+     *
+     * @return  new instance or this if values are equal
+     */
     @NotNull
     @Contract(pure = true)
     public SteamId withAccountType(
@@ -1620,6 +3532,14 @@ public final class SteamId implements Serializable, Cloneable {
         return this.withAccountType(ESteamAccount.fromIdOrNull(account));
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * w/ different account type value.
+     *
+     * @param account  new account type, may be null
+     *
+     * @return  new instance or this if values are equal
+     */
     @NotNull
     @Contract(pure = true)
     public SteamId withAccountType(
@@ -1629,6 +3549,9 @@ public final class SteamId implements Serializable, Cloneable {
         return this.withAccountType(ESteamAccount.fromCharOrNull(account));
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Contract(pure = true)
     public boolean equals(
@@ -1650,6 +3573,9 @@ public final class SteamId implements Serializable, Cloneable {
                 && this.account == that.account;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @Contract(pure = true)
     public int hashCode() {
@@ -1666,6 +3592,9 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @NotNull
     @Contract(pure = true)
@@ -1701,6 +3630,9 @@ public final class SteamId implements Serializable, Cloneable {
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     @NotNull
     @Contract(pure = true)
@@ -1708,6 +3640,21 @@ public final class SteamId implements Serializable, Cloneable {
         return new SteamId(this);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-32 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-32 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param xuid          account type-32 identifier, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromSteamXuidOrElse(
@@ -1724,6 +3671,21 @@ public final class SteamId implements Serializable, Cloneable {
         return new SteamId(xuid);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-32 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-32 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param xuid                  account type-32 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromSteamXuidOrElse(
@@ -1736,6 +3698,23 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromSteamXuidOrNull(xuid), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-32 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteamXuidOrElse(Integer, Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-32 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param xuid                  account type-32 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromSteamXuidOrElse(
@@ -1748,6 +3727,23 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamXuidOrElse(xuid, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-32 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteamXuidOrElse(Integer, SteamId)}
+     * w/ {@code null} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-32 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param xuid  account type-32 identifier, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static SteamId fromSteamXuidOrNull(
@@ -1757,6 +3753,21 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamXuidOrElse(xuid, (@Nullable SteamId) null);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-32 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-32 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param xuid          account type-32 identifier, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromSteamXuidOrElse(
@@ -1776,6 +3787,21 @@ public final class SteamId implements Serializable, Cloneable {
         return defaultValue;
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-32 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-32 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param xuid                  account type-32 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromSteamXuidOrElse(
@@ -1788,6 +3814,23 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromSteamXuidOrNull(xuid), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-32 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteamXuidOrElse(String, Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-32 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param xuid                  account type-32 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromSteamXuidOrElse(
@@ -1800,6 +3843,23 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamXuidOrElse(xuid, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-32 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteamXuidOrElse(String, SteamId)}
+     * w/ {@code null} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-32 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param xuid  account type-32 identifier, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static SteamId fromSteamXuidOrNull(
@@ -1809,6 +3869,21 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamXuidOrElse(xuid, (@Nullable SteamId) null);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-64 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-64 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id64          account type-64 identifier, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromSteam64OrElse(
@@ -1830,6 +3905,21 @@ public final class SteamId implements Serializable, Cloneable {
         return new SteamId(xuid, universe, instance, account);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-64 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-64 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id64                  account type-64 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromSteam64OrElse(
@@ -1842,6 +3932,23 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromSteam64OrNull(id64), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-64 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteam64OrElse(Long, Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-64 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id64                  account type-64 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromSteam64OrElse(
@@ -1854,6 +3961,23 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteam64OrElse(id64, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-64 identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromSteam64OrElse(Long, SteamId)}
+     * w/ {@code null} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-64 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id64  account type-64 identifier, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static SteamId fromSteam64OrNull(
@@ -1863,6 +3987,21 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteam64OrElse(id64, (@Nullable SteamId) null);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-64 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-64 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id64          account type-64 identifier, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromSteam64OrElse(
@@ -1886,6 +4025,21 @@ public final class SteamId implements Serializable, Cloneable {
         return defaultValue;
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-64 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-64 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id64                  account type-64 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromSteam64OrElse(
@@ -1898,6 +4052,23 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromSteam64OrNull(id64), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-64 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteam64OrElse(String, Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-64 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id64                  account type-64 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromSteam64OrElse(
@@ -1910,6 +4081,23 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteam64OrElse(id64, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-64 identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromSteam64OrElse(String, SteamId)}
+     * w/ {@code null} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-64 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id64  account type-64 identifier, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static SteamId fromSteam64OrNull(
@@ -1919,6 +4107,21 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteam64OrElse(id64, (@Nullable SteamId) null);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-2 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-2 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id2           account type-2 identifier, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromSteam2OrElse(
@@ -1955,6 +4158,21 @@ public final class SteamId implements Serializable, Cloneable {
         return defaultValue;
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-2 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-2 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id2                   account type-2 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromSteam2OrElse(
@@ -1967,6 +4185,23 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromSteam2OrNull(id2), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-2 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteam2OrElse(String, Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-2 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id2                   account type-2 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromSteam2OrElse(
@@ -1979,6 +4214,20 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteam2OrElse(id2, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-2 identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-2 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id2   account type-2 identifier, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static SteamId fromSteam2OrNull(
@@ -1988,6 +4237,21 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteam2OrElse(id2, (@Nullable SteamId) null);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-3 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-3 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id3           account type-3 identifier, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromSteam3OrElse(
@@ -2049,6 +4313,21 @@ public final class SteamId implements Serializable, Cloneable {
         return defaultValue;
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-3 identifier
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-3 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id3                   account type-3 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromSteam3OrElse(
@@ -2061,6 +4340,23 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromSteam3OrNull(id3), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-3 identifier
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteam3OrElse(String, Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-3 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id3                   account type-3 identifier, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromSteam3OrElse(
@@ -2073,6 +4369,23 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteam3OrElse(id3, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam account type-3 identifier
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromSteam3OrElse(String, SteamId)}
+     * w/ {@code null} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Account type-3 identifier isn't valid.</li>
+     * </ul>
+     *
+     * @param id3   account type-3 identifier, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static SteamId fromSteam3OrNull(
@@ -2082,6 +4395,21 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteam3OrElse(id3, (@Nullable SteamId) null);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam invite code
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Invite code isn't valid.</li>
+     * </ul>
+     *
+     * @param code          invite code, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromInviteCodeOrElse(
@@ -2094,6 +4422,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNotNullNoCheck(USteamInvite.toXuidOrNull(code), SteamId::new, defaultValue);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam invite code
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Invite code isn't valid.</li>
+     * </ul>
+     *
+     * @param code                  invite code, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromInviteCodeOrElse(
@@ -2106,6 +4449,23 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromInviteCodeOrNull(code), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam invite code
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromInviteCodeOrElse(String, Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Invite code isn't valid.</li>
+     * </ul>
+     *
+     * @param code                  invite code, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromInviteCodeOrElse(
@@ -2118,6 +4478,23 @@ public final class SteamId implements Serializable, Cloneable {
         return fromInviteCodeOrElse(code, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam invite code
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromInviteCodeOrElse(String, SteamId)}
+     * w/ {@code null} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Invite code isn't valid.</li>
+     * </ul>
+     *
+     * @param code  invite code, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static SteamId fromInviteCodeOrNull(
@@ -2127,6 +4504,21 @@ public final class SteamId implements Serializable, Cloneable {
         return fromInviteCodeOrElse(code, (@Nullable SteamId) null);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a CS:GO friend code
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>CS:GO friend code isn't valid.</li>
+     * </ul>
+     *
+     * @param code          CS:GO friend code, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromCsgoCodeOrElse(
@@ -2139,6 +4531,21 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNotNullNoCheck(USteamCsgo.toXuidOrNull(code), SteamId::new, defaultValue);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a CS:GO friend code
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>CS:GO friend code isn't valid.</li>
+     * </ul>
+     *
+     * @param code                  CS:GO friend code, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromCsgoCodeOrElse(
@@ -2151,6 +4558,23 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromCsgoCodeOrNull(code), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a CS:GO friend code
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromCsgoCodeOrElse(String, Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>CS:GO friend code isn't valid.</li>
+     * </ul>
+     *
+     * @param code                  CS:GO friend code, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromCsgoCodeOrElse(
@@ -2163,6 +4587,23 @@ public final class SteamId implements Serializable, Cloneable {
         return fromCsgoCodeOrElse(code, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a CS:GO friend code
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromCsgoCodeOrElse(String, SteamId)}
+     * w/ {@code null} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>CS:GO friend code isn't valid.</li>
+     * </ul>
+     *
+     * @param code  CS:GO friend code, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static SteamId fromCsgoCodeOrNull(
@@ -2172,6 +4613,21 @@ public final class SteamId implements Serializable, Cloneable {
         return fromCsgoCodeOrElse(code, (@Nullable SteamId) null);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam /profiles/ URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>/profiles/ URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url           /profiles/ URL, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromSteamProfileUrlOrElse(
@@ -2204,6 +4660,21 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteam3OrElse(mId, defaultValue);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam /profiles/ URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>/profiles/ URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url                   /profiles/ URL, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromSteamProfileUrlOrElse(
@@ -2216,6 +4687,23 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromSteamProfileUrlOrNull(url), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam /profiles/ URL
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteamProfileUrlOrElse(String, Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>/profiles/ URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url                   /profiles/ URL, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromSteamProfileUrlOrElse(
@@ -2228,6 +4716,23 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamProfileUrlOrElse(url, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam /profiles/ URL
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromSteamProfileUrlOrElse(String, SteamId)}
+     * w/ {@code null} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>/profiles/ URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url   /profiles/ URL, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = false)
     public static SteamId fromSteamProfileUrlOrNull(
@@ -2237,6 +4742,21 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamProfileUrlOrElse(url, (@Nullable SteamId) null);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam /user/ URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>/user/ URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url           /user/ URL, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromSteamUserUrlOrElse(
@@ -2263,6 +4783,21 @@ public final class SteamId implements Serializable, Cloneable {
         return fromInviteCodeOrElse(code, defaultValue);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam /user/ URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>/user/ URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url                   /user/ URL, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromSteamUserUrlOrElse(
@@ -2275,6 +4810,23 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromSteamUserUrlOrNull(url), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam /user/ URL
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteamUserUrlOrElse(String, Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>/user/ URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url                   /user/ URL, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromSteamUserUrlOrElse(
@@ -2287,6 +4839,23 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamUserUrlOrElse(url, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam /user/ URL
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromSteamUserUrlOrElse(String, SteamId)}
+     * w/ {@code null} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>/user/ URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url   /user/ URL, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static SteamId fromSteamUserUrlOrNull(
@@ -2296,6 +4865,20 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamUserUrlOrElse(url, (@Nullable SteamId) null);
     }
 
+    /**
+     * Create a new {@link SteamId} instance from a Steam URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Steam URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url           Steam URL, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromSteamUrlOrElse(
@@ -2313,6 +4896,20 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamUserUrlOrElse(url, defaultValue);
     }
 
+    /**
+     * Create a new {@link SteamId} instance from a Steam URL
+     * or return a default value on failure.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Steam URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url                   Steam URL, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromSteamUrlOrElse(
@@ -2325,6 +4922,22 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromSteamUrlOrNull(url), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance from a Steam URL
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteamUrlOrElse(String, Supplier)}.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Steam URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url                   Steam URL, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromSteamUrlOrElse(
@@ -2337,6 +4950,22 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamUrlOrElse(url, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance from a Steam URL
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromSteamUrlOrElse(String, SteamId)}
+     * w/ {@code null} as the default value.
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Steam URL isn't valid.</li>
+     * </ul>
+     *
+     * @param url   Steam URL, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static SteamId fromSteamUrlOrNull(
@@ -2346,6 +4975,34 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamUrlOrElse(url, (@Nullable SteamId) null);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam related object
+     * or return a default value on failure.
+     *
+     * <p>Wraps all these methods in order:
+     * <ul>
+     *     <li>{@link #fromSteamXuidOrElse(Integer, SteamId)}</li>
+     *     <li>{@link #fromSteam64OrElse(Long, SteamId)}</li>
+     *     <li>{@link #fromSteamXuidOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam64OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam2OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam3OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromInviteCodeOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromCsgoCodeOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteamUrlOrElse(String, SteamId)}</li>
+     * </ul>
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Steam related object doesn't match w/ any of methods.</li>
+     * </ul>
+     *
+     * @param obj           Steam related object, may be null
+     * @param defaultValue  default value to return on failure, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> param2", pure = true)
     public static SteamId fromSteamAnyOrElse(
@@ -2409,6 +5066,34 @@ public final class SteamId implements Serializable, Cloneable {
         return defaultValue;
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam related object
+     * or return a default value on failure.
+     *
+     * <p>Wraps all these methods in order:
+     * <ul>
+     *     <li>{@link #fromSteamXuidOrElse(Integer, SteamId)}</li>
+     *     <li>{@link #fromSteam64OrElse(Long, SteamId)}</li>
+     *     <li>{@link #fromSteamXuidOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam64OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam2OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam3OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromInviteCodeOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromCsgoCodeOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteamUrlOrElse(String, SteamId)}</li>
+     * </ul>
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Steam related object doesn't match w/ any of methods.</li>
+     * </ul>
+     *
+     * @param obj                   Steam related object, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(pure = false)
     public static SteamId fromSteamAnyOrElse(
@@ -2421,6 +5106,36 @@ public final class SteamId implements Serializable, Cloneable {
         return UwObject.ifNull(fromSteamAnyOrNull(obj), defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam related object
+     * or return a default value on failure.
+     *
+     * <p>Wraps {@link #fromSteamAnyOrElse(Object, Supplier)}.
+     *
+     * <p>Wraps all these methods in order:
+     * <ul>
+     *     <li>{@link #fromSteamXuidOrElse(Integer, SteamId)}</li>
+     *     <li>{@link #fromSteam64OrElse(Long, SteamId)}</li>
+     *     <li>{@link #fromSteamXuidOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam64OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam2OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam3OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromInviteCodeOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromCsgoCodeOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteamUrlOrElse(String, SteamId)}</li>
+     * </ul>
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Steam related object doesn't match w/ any of methods.</li>
+     * </ul>
+     *
+     * @param obj                   Steam related object, may be null
+     * @param defaultValueSupplier  supplier to get the default value from, may be null
+     *
+     * @return  new instance or the default value
+     */
     @UnknownNullability
     @Contract(value = "null, _ -> null", pure = false)
     public static SteamId fromSteamAnyOrElse(
@@ -2433,6 +5148,36 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamAnyOrElse(obj, (@Nullable Supplier<@UnknownNullability SteamId>) defaultValueSupplier);
     }
 
+    /**
+     * Create a new {@link SteamId} instance
+     * from a Steam related object
+     * or return {@code null} on failure.
+     *
+     * <p>Wraps {@link #fromSteamAnyOrElse(Object, SteamId)}
+     * w/ {@code null} as the default value.
+     *
+     * <p>Wraps all these methods in order:
+     * <ul>
+     *     <li>{@link #fromSteamXuidOrElse(Integer, SteamId)}</li>
+     *     <li>{@link #fromSteam64OrElse(Long, SteamId)}</li>
+     *     <li>{@link #fromSteamXuidOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam64OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam2OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteam3OrElse(String, SteamId)}</li>
+     *     <li>{@link #fromInviteCodeOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromCsgoCodeOrElse(String, SteamId)}</li>
+     *     <li>{@link #fromSteamUrlOrElse(String, SteamId)}</li>
+     * </ul>
+     *
+     * <p>Possible failure cases:
+     * <ul>
+     *     <li>Steam related object doesn't match w/ any of methods.</li>
+     * </ul>
+     *
+     * @param obj   Steam related object, may be null
+     *
+     * @return  new instance or {@code null}
+     */
     @UnknownNullability
     @Contract(value = "null -> null", pure = true)
     public static SteamId fromSteamAnyOrNull(
@@ -2442,59 +5187,118 @@ public final class SteamId implements Serializable, Cloneable {
         return fromSteamAnyOrElse(obj, (@Nullable SteamId) null);
     }
 
+    /**
+     * A builder class for creation of {@link SteamId} instance.
+     */
     public static final class Builder implements Serializable, Cloneable {
+
+        /**
+         * An attribute name of this account type-32 identifier.
+         */
+        @NotNull
+        public static final String ATTRIBUTE_NAME_XUID = "xuid";
+
+        /**
+         * An attribute name of this account universe type enum.
+         */
+        @NotNull
+        public static final String ATTRIBUTE_NAME_E_UNIVERSE = "eUniverse";
+
+        /**
+         * An attribute name of this account instance type enum.
+         */
+        @NotNull
+        public static final String ATTRIBUTE_NAME_E_INSTANCE = "eInstance";
+
+        /**
+         * An attribute name of this account type enum.
+         */
+        @NotNull
+        public static final String ATTRIBUTE_NAME_E_ACCOUNT = "eAccount";
+
+        /**
+         * An attribute name of this account universe type identifier.
+         */
+        @NotNull
+        public static final String ATTRIBUTE_NAME_I_UNIVERSE = "iUniverse";
+
+        /**
+         * An attribute name of this account instance type identifier.
+         */
+        @NotNull
+        public static final String ATTRIBUTE_NAME_I_INSTANCE = "iInstance";
+
+        /**
+         * An attribute name of this account type identifier.
+         */
+        @NotNull
+        public static final String ATTRIBUTE_NAME_I_ACCOUNT = "iAccount";
+
+        /**
+         * An attribute name of this account type character.
+         */
+        @NotNull
+        public static final String ATTRIBUTE_NAME_C_ACCOUNT = "cAccount";
+
+        /**
+         * A simple name of this class.
+         */
         @NotNull
         private static final String SIMPLE_NAME = SteamId.class.getSimpleName()
                 + ":" + Builder.class.getSimpleName();
 
-        @NotNull
-        private static final String ATTRIBUTE_NAME_XUID = "xuid";
-
-        @NotNull
-        private static final String ATTRIBUTE_NAME_E_UNIVERSE = "eUniverse";
-
-        @NotNull
-        private static final String ATTRIBUTE_NAME_E_INSTANCE = "eInstance";
-
-        @NotNull
-        private static final String ATTRIBUTE_NAME_E_ACCOUNT = "eAccount";
-
-        @NotNull
-        private static final String ATTRIBUTE_NAME_I_UNIVERSE = "iUniverse";
-
-        @NotNull
-        private static final String ATTRIBUTE_NAME_I_INSTANCE = "iInstance";
-
-        @NotNull
-        private static final String ATTRIBUTE_NAME_I_ACCOUNT = "iAccount";
-
-        @NotNull
-        private static final String ATTRIBUTE_NAME_C_ACCOUNT = "cAccount";
-
+        /**
+         * An account type-32 identifier.
+         */
         @UnknownNullability
         private Integer xuid;
 
+        /**
+         * An account universe type enum.
+         */
         @UnknownNullability
         private ESteamUniverse eUniverse;
 
+        /**
+         * An account instance type enum.
+         */
         @UnknownNullability
         private ESteamInstance eInstance;
 
+        /**
+         * An account type enum.
+         */
         @UnknownNullability
         private ESteamAccount eAccount;
 
+        /**
+         * An account universe type identifier.
+         */
         @UnknownNullability
         private Integer iUniverse;
 
+        /**
+         * An account instance type identifier.
+         */
         @UnknownNullability
         private Integer iInstance;
 
+        /**
+         * An account type identifier.
+         */
         @UnknownNullability
         private Integer iAccount;
 
+        /**
+         * An account type character.
+         */
         @UnknownNullability
         private Character cAccount;
 
+        /**
+         * Initialize a {@link SteamId.Builder} instance
+         * w/ all fields being assigned to {@code null}.
+         */
         @Contract(pure = true)
         public Builder() {
             this.xuid = null;
@@ -2507,9 +5311,19 @@ public final class SteamId implements Serializable, Cloneable {
             this.cAccount = null;
         }
 
+        /**
+         * Initialize a {@link SteamId.Builder} instance.
+         *
+         * <p>Defines a copy constructor.
+         *
+         * @param that	instance to copy filed values from
+         *
+         * @throws NullPointerException if that instance is {@code null}
+         */
         @Contract(value = "null -> fail", pure = true)
         private Builder(
-                @UnknownNullability final Builder that
+                @UnknownNullability
+                final Builder that
         ) {
             this.xuid = that.xuid;
             this.eUniverse = that.eUniverse;
@@ -2521,6 +5335,11 @@ public final class SteamId implements Serializable, Cloneable {
             this.cAccount = that.cAccount;
         }
 
+        /**
+         * Create a new {@link SteamId} instance.
+         *
+         * @return  new {@link SteamId} instance
+         */
         @NotNull
         @Contract(value = "-> new", pure = true)
         public SteamId build() {
@@ -2533,94 +5352,189 @@ public final class SteamId implements Serializable, Cloneable {
             return new SteamId(this.xuid, universe, instance, account);
         }
 
+        /**
+         * Check if this account type-32 identifier isn't null.
+         *
+         * @return  {@code true} if not null
+         *          or {@code false} otherwise
+         */
         @Contract(pure = true)
         public boolean hasXuid() {
             return this.xuid != null;
         }
 
+        /**
+         * Check if this account universe type enum isn't null.
+         *
+         * @return  {@code true} if not null
+         *          or {@code false} otherwise
+         */
         @Contract(pure = true)
         public boolean hasUniverseType() {
             return this.eUniverse != null;
         }
 
+        /**
+         * Check if this account instance type enum isn't null.
+         *
+         * @return  {@code true} if not null
+         *          or {@code false} otherwise
+         */
         @Contract(pure = true)
         public boolean hasInstanceType() {
             return this.eInstance != null;
         }
 
+        /**
+         * Check if this account type enum isn't null.
+         *
+         * @return  {@code true} if not null
+         *          or {@code false} otherwise
+         */
         @Contract(pure = true)
         public boolean hasAccountType() {
             return this.eAccount != null;
         }
 
+        /**
+         * Check if this account universe type identifier isn't null.
+         *
+         * @return  {@code true} if not null
+         *          or {@code false} otherwise
+         */
         @Contract(pure = true)
         public boolean hasIntUniverseType() {
             return this.iUniverse != null;
         }
 
+        /**
+         * Check if this account instance type identifier isn't null.
+         *
+         * @return  {@code true} if not null
+         *          or {@code false} otherwise
+         */
         @Contract(pure = true)
         public boolean hasIntInstanceType() {
             return this.iInstance != null;
         }
 
+        /**
+         * Check if this account type identifier isn't null.
+         *
+         * @return  {@code true} if not null
+         *          or {@code false} otherwise
+         */
         @Contract(pure = true)
         public boolean hasIntAccountType() {
             return this.iAccount != null;
         }
 
+        /**
+         * Check if this account type character isn't null.
+         *
+         * @return  {@code true} if not null
+         *          or {@code false} otherwise
+         */
         @Contract(pure = true)
         public boolean hasCharAccountType() {
             return this.cAccount != null;
         }
 
+        /**
+         * Get this account type-32 identifier.
+         *
+         * @return  account type-32 identifier
+         */
         @UnknownNullability
         @Contract(pure = true)
         public Integer getXuid() {
             return this.xuid;
         }
 
+        /**
+         * Get this account universe type enum.
+         *
+         * @return  account universe type enum
+         */
         @UnknownNullability
         @Contract(pure = true)
         public ESteamUniverse getUniverseType() {
             return this.eUniverse;
         }
 
+        /**
+         * Get this account instance type enum.
+         *
+         * @return  account instance type enum
+         */
         @UnknownNullability
         @Contract(pure = true)
         public ESteamInstance getInstanceType() {
             return this.eInstance;
         }
 
+        /**
+         * Get this account type enum.
+         *
+         * @return  account type enum
+         */
         @UnknownNullability
         @Contract(pure = true)
         public ESteamAccount getAccountType() {
             return this.eAccount;
         }
 
+        /**
+         * Get this account universe type identifier.
+         *
+         * @return  account universe type identifier
+         */
         @UnknownNullability
         @Contract(pure = true)
         public Integer getIntUniverseType() {
             return this.iUniverse;
         }
 
+        /**
+         * Get this account instance type identifier.
+         *
+         * @return  account instance type identifier
+         */
         @UnknownNullability
         @Contract(pure = true)
         public Integer getIntInstanceType() {
             return this.iInstance;
         }
 
+        /**
+         * Get this account type identifier.
+         *
+         * @return  account type identifier
+         */
         @UnknownNullability
         @Contract(pure = true)
         public Integer getIntAccountType() {
             return iAccount;
         }
 
+        /**
+         * Get this account type character.
+         *
+         * @return  account type character
+         */
         @UnknownNullability
         @Contract(pure = true)
         public Character getCharAccountType() {
             return this.cAccount;
         }
 
+        /**
+         * Set this account type-32 identifier.
+         *
+         * @param xuid  account type-32 identifier
+         *
+         * @return  this instance
+         */
         @NotNull
         @Contract(value = "_ -> this", pure = false)
         public Builder setXuid(
@@ -2631,6 +5545,13 @@ public final class SteamId implements Serializable, Cloneable {
             return this;
         }
 
+        /**
+         * Set this account universe type enum.
+         *
+         * @param universe  account universe type enum
+         *
+         * @return  this instance
+         */
         @NotNull
         @Contract(value = "_ -> this", pure = false)
         public Builder setUniverseType(
@@ -2642,6 +5563,13 @@ public final class SteamId implements Serializable, Cloneable {
             return this;
         }
 
+        /**
+         * Set this account universe type identifier.
+         *
+         * @param universe  account universe type identifier
+         *
+         * @return  this instance
+         */
         @NotNull
         @Contract(value = "_ -> this", pure = false)
         public Builder setUniverseType(
@@ -2653,6 +5581,13 @@ public final class SteamId implements Serializable, Cloneable {
             return this;
         }
 
+        /**
+         * Set this account instance type enum.
+         *
+         * @param instance  account instance type enum
+         *
+         * @return  this instance
+         */
         @NotNull
         @Contract(value = "_ -> this", pure = false)
         public Builder setInstanceType(
@@ -2664,6 +5599,13 @@ public final class SteamId implements Serializable, Cloneable {
             return this;
         }
 
+        /**
+         * Set this account instance type identifier.
+         *
+         * @param instance  account instance type identifier
+         *
+         * @return  this instance
+         */
         @NotNull
         @Contract(value = "_ -> this", pure = false)
         public Builder setInstanceType(
@@ -2675,6 +5617,13 @@ public final class SteamId implements Serializable, Cloneable {
             return this;
         }
 
+        /**
+         * Set this account type enum.
+         *
+         * @param account   account type enum
+         *
+         * @return  this instance
+         */
         @NotNull
         @Contract(value = "_ -> this", pure = false)
         public Builder setAccountType(
@@ -2687,6 +5636,13 @@ public final class SteamId implements Serializable, Cloneable {
             return this;
         }
 
+        /**
+         * Set this account type identifier.
+         *
+         * @param account   account type identifier
+         *
+         * @return  this instance
+         */
         @NotNull
         @Contract(value = "_ -> this", pure = false)
         public Builder setAccountType(
@@ -2699,6 +5655,13 @@ public final class SteamId implements Serializable, Cloneable {
             return this;
         }
 
+        /**
+         * Set this account type character.
+         *
+         * @param account   account type character
+         *
+         * @return  this instance
+         */
         @NotNull
         @Contract(value = "_ -> this", pure = false)
         public Builder setAccountType(
@@ -2711,6 +5674,14 @@ public final class SteamId implements Serializable, Cloneable {
             return this;
         }
 
+        /**
+         * Create a new {@link SteamId.Builder} instance
+         * w/ different {@link #xuid} value.
+         *
+         * @param xuid  new account type-32 identifier
+         *
+         * @return  new instance or this if values are equal
+         */
         @NotNull
         @Contract(pure = true)
         public Builder withXuid(
@@ -2725,6 +5696,14 @@ public final class SteamId implements Serializable, Cloneable {
                     .setXuid(xuid);
         }
 
+        /**
+         * Create a new {@link SteamId.Builder} instance
+         * w/ different {@link #eUniverse} value.
+         *
+         * @param universe  new account universe type enum
+         *
+         * @return  new instance or this if values are equal
+         */
         @NotNull
         @Contract(pure = true)
         public Builder withUniverseType(
@@ -2739,6 +5718,14 @@ public final class SteamId implements Serializable, Cloneable {
                     .setUniverseType(universe);
         }
 
+        /**
+         * Create a new {@link SteamId.Builder} instance
+         * w/ different {@link #iUniverse} value.
+         *
+         * @param universe  new account universe type identifier
+         *
+         * @return  new instance or this if values are equal
+         */
         @NotNull
         @Contract(pure = true)
         public Builder withUniverseType(
@@ -2753,6 +5740,14 @@ public final class SteamId implements Serializable, Cloneable {
                     .setUniverseType(universe);
         }
 
+        /**
+         * Create a new {@link SteamId.Builder} instance
+         * w/ different {@link #eInstance} value.
+         *
+         * @param instance  new account instance type enum
+         *
+         * @return  new instance or this if values are equal
+         */
         @NotNull
         @Contract(pure = true)
         public Builder withInstanceType(
@@ -2767,6 +5762,14 @@ public final class SteamId implements Serializable, Cloneable {
                     .setInstanceType(instance);
         }
 
+        /**
+         * Create a new {@link SteamId.Builder} instance
+         * w/ different {@link #iInstance} value.
+         *
+         * @param instance  new account instance type identifier
+         *
+         * @return  new instance or this if values are equal
+         */
         @NotNull
         @Contract(pure = true)
         public Builder withInstanceType(
@@ -2781,6 +5784,14 @@ public final class SteamId implements Serializable, Cloneable {
                     .setInstanceType(instance);
         }
 
+        /**
+         * Create a new {@link SteamId.Builder} instance
+         * w/ different {@link #eAccount} value.
+         *
+         * @param account   new account type enum
+         *
+         * @return  new instance or this if values are equal
+         */
         @NotNull
         @Contract(pure = true)
         public Builder withAccountType(
@@ -2795,6 +5806,14 @@ public final class SteamId implements Serializable, Cloneable {
                     .setAccountType(account);
         }
 
+        /**
+         * Create a new {@link SteamId.Builder} instance
+         * w/ different {@link #iAccount} value.
+         *
+         * @param account   new account type identifier
+         *
+         * @return  new instance or this if values are equal
+         */
         @NotNull
         @Contract(pure = true)
         public Builder withAccountType(
@@ -2809,6 +5828,14 @@ public final class SteamId implements Serializable, Cloneable {
                     .setAccountType(account);
         }
 
+        /**
+         * Create a new {@link SteamId.Builder} instance
+         * w/ different {@link #cAccount} value.
+         *
+         * @param account   new account type character
+         *
+         * @return  new instance or this if values are equal
+         */
         @NotNull
         @Contract(pure = true)
         public Builder withAccountType(
@@ -2823,6 +5850,9 @@ public final class SteamId implements Serializable, Cloneable {
                     .setAccountType(account);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public int hashCode() {
             return Objects.hash(
@@ -2837,6 +5867,9 @@ public final class SteamId implements Serializable, Cloneable {
             );
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         @Contract(pure = true)
         public boolean equals(
@@ -2862,6 +5895,9 @@ public final class SteamId implements Serializable, Cloneable {
                     && Objects.equals(this.cAccount, that.cAccount);
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         @NotNull
         @Contract(pure = true)
@@ -2901,6 +5937,9 @@ public final class SteamId implements Serializable, Cloneable {
                     + "]";
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         @NotNull
         @Contract(value = "-> new", pure = true)
